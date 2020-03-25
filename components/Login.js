@@ -1,27 +1,87 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import Form from './Form';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button } from 'react-native';
+import firebase from '../config';
 
-class Login extends Component {
-  signup() {
-    Actions.signup();
-  }
-  render() {
-    return (
-      <View>
-        <Text>{'\n'}</Text>
-        <Text>{'\n'}</Text>
-        <Form type="Login" />
-        <View>
-          <Text>No account yet? </Text>
-          <TouchableOpacity onPress={this.signup}>
-            <Text>Signup</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+class Login extends React.Component {
+  constructor (props) {
+  super(props);
+  this.state = {
+      email: '',
+      password: ''
   }
 }
 
-export default Login;
+handleLogin = () => {
+  const { email, password } = this.state
+  firebase.auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => this.props.navigation.navigate('Profile', {email: email}))
+      .catch(error => console.log(error))
+}
+
+  render() {
+      return (
+          <View style={styles.container}>
+              <TextInput
+                  style={styles.inputBox}
+                  value={this.state.email}
+                  onChangeText={email => this.setState({ email: email })}
+                  placeholder='Email'
+                  autoCapitalize='none'
+              />
+              <TextInput
+                  style={styles.inputBox}
+                  value={this.state.password}
+                  onChangeText={password => this.setState({ password: password })}
+                  placeholder='Password'
+                  secureTextEntry={true}
+              />
+              <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText} onPress={this.handleLogin}>Login</Text>
+              </TouchableOpacity>
+              <Button title="Don't have an account yet? Sign up"
+              onPress={() => this.props.navigation.navigate('Signup')}
+              />
+          </View>
+      )
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+  },
+  inputBox: {
+      width: '85%',
+      margin: 10,
+      padding: 15,
+      fontSize: 16,
+      borderColor: '#d3d3d3',
+      borderBottomWidth: 1,
+      textAlign: 'center'
+  },
+  button: {
+      marginTop: 30,
+      marginBottom: 20,
+      paddingVertical: 5,
+      alignItems: 'center',
+      backgroundColor: '#F6820D',
+      borderColor: '#F6820D',
+      borderWidth: 1,
+      borderRadius: 5,
+      width: 200
+  },
+  buttonText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#fff'
+  },
+  buttonSignup: {
+      fontSize: 12
+  }
+})
+
+export default Login
