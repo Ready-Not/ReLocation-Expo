@@ -1,8 +1,5 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
-import {Config} from 'react-native-config'
-
-import Config from 'react-native-config';
 
 const FIREBASE_CONFIG = {
 apiKey: Config.FIREBASE_CONFIG_apiKey,

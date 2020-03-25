@@ -1,6 +1,7 @@
 import {firestore} from '../config';
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
+import { useScreens } from 'react-native-screens';
 
 export default class DataBaseTest extends Component {
   constructor(props) {
@@ -15,12 +16,11 @@ export default class DataBaseTest extends Component {
       .collection('users')
       .get()
       .then(snapshot => {
+        let users = []
         snapshot.docs.forEach(doc => {
-          // let userFirst = doc.dm.proto.fields.First.stringValue;
-          // console.log(userFirst, typeof userFirst);
           let user = doc.data()
-          this.setState({users: user});
-          console.log(this.state.users);
+          users.push(user)
+          this.setState({users: users});
         });
       });
   }
@@ -29,7 +29,7 @@ export default class DataBaseTest extends Component {
     return (
       <View>
         {this.state.users.map(user => {
-          return <Text>{user}</Text>
+          return <Text>{user.First}</Text>
         })}
       </View>
     );
