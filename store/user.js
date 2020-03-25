@@ -39,7 +39,7 @@ export const login = () => {
           const response = await firebase.auth().signInWithEmailAndPassword(email, password)
           dispatch(getUser(response.user.uid))
       } catch (e) {
-          console.log(e)
+          alert(e)
       }
   }
 }
@@ -51,7 +51,6 @@ export const getUser = uid => {
               .collection('users')
               .doc(uid)
               .get()
-
           dispatch({ type: LOGIN, payload: user.data() })
       } catch (e) {
           alert(e)
@@ -77,7 +76,7 @@ export const signup = () => {
             dispatch({ type: SIGNUP, payload: user })
         }
       } catch (e) {
-          console.log(e)
+          alert(e)
       }
   }
 }

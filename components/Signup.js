@@ -9,10 +9,6 @@ class Signup extends React.Component {
 
   //Right now it is going to forward you to the Profile page, even if signup is not sucessfull
   //TBD: show errors if could not sign user up
-  handleSignUp = () => {
-    this.props.signup(this.state)
-    this.props.navigation.navigate('Profile')
-}
 
     render() {
         return (
@@ -43,7 +39,7 @@ class Signup extends React.Component {
                     placeholder='Password'
                     secureTextEntry={true}
                 />
-                <TouchableOpacity style={styles.button} onPress={this.handleSignUp}>
+                <TouchableOpacity style={styles.button} onPress={() => this.props.signup()}>
                     <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
                 <Button title="Already have an account? Login"
