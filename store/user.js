@@ -1,4 +1,4 @@
-import firebase from '../config'
+import firebase, {firestore} from '../config'
 
 // import AsyncStorage from '@react-native-community/async-storage';
 
@@ -50,7 +50,17 @@ export const signup = () => {
         const { email, password } = getState().user
         console.log('from SIGNUP THUNK', email, password)
           const response = await firebase.auth().createUserWithEmailAndPassword(email, password)
-          dispatch({ type: SIGNUP, payload: response.user })
+          if (response.user.uid) {
+            const user = {
+                uid: response.user.uid,
+                email: email
+            }
+            firestore.collection('users')
+                .doc(response.user.uid)
+                .set(user)
+
+            dispatch({ type: SIGNUP, payload: user })
+        }
       } catch (e) {
           console.log(e)
       }
