@@ -1,22 +1,17 @@
 import React, {Component} from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button } from 'react-native';
 import firebase from '../config';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { updateEmail, updatePassword, login } from '../store/user'
 
 class Login extends React.Component {
-  constructor (props) {
-  super(props);
-  this.state = {
-      email: '',
-      password: ''
-  }
-}
 
-handleLogin = () => {
-  const { email, password } = this.state
-  firebase.auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Profile', {email: email}))
-      .catch(error => console.log(error))
+  //Right now it is going to forward you to the Profile page, even if signup is not sucessfull
+  //TBD: show errors if could not sign user up
+  handleLogin = () => {
+    this.props.login()
+    this.props.navigation.navigate('Profile')
 }
 
   render() {
@@ -24,15 +19,15 @@ handleLogin = () => {
           <View style={styles.container}>
               <TextInput
                   style={styles.inputBox}
-                  value={this.state.email}
-                  onChangeText={email => this.setState({ email: email })}
+                  value={this.props.user.email}
+                  onChangeText={email => this.props.updateEmail(email)}
                   placeholder='Email'
                   autoCapitalize='none'
               />
               <TextInput
                   style={styles.inputBox}
-                  value={this.state.password}
-                  onChangeText={password => this.setState({ password: password })}
+                  value={this.props.user.password}
+                  onChangeText={password => this.props.updatePassword(password)}
                   placeholder='Password'
                   secureTextEntry={true}
               />
@@ -84,4 +79,17 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Login
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({ updateEmail, updatePassword, login }, dispatch)
+}
+
+const mapStateToProps = state => {
+  return {
+      user: state.user
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login)

@@ -1,4 +1,10 @@
 import React, {Component} from 'react';
+
+import { createStore, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'
+import thunkMiddleware from 'redux-thunk'
+import reducer from './store'
+
 import {
   SafeAreaView,
   StyleSheet,
@@ -24,6 +30,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {decode, encode} from 'base-64'
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
+
+const middleware = applyMiddleware(thunkMiddleware)
+const store = createStore(reducer, middleware)
 
 const Stack = createStackNavigator();
 
@@ -56,6 +65,7 @@ class App extends Component {
 
   render() {
       return (
+        <Provider store={store}>
         <NavigationContainer>
           {/* <Stack.Navigator
             screenOptions={{
@@ -67,6 +77,7 @@ class App extends Component {
           </Stack.Navigator> */}
           <LogIn />
         </NavigationContainer>
+        </Provider>
       );
     }
   }

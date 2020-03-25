@@ -14,7 +14,6 @@ export default class Profile extends Component {
       <View>
         <Text>Welcome!</Text>
         <Text>This is a profile page</Text>
-    <Text>{this.props.route.params.email}</Text>
       </View>
     );
   }

@@ -1,15 +1,23 @@
-import {createStore, combineReducers, applyMiddleware} from 'redux';
-import {createLogger} from 'redux-logger';
-import thunkMiddleware from 'redux-thunk';
-import {composeWithDevTools} from 'redux-devtools-extension';
-import user from './user';
+import { combineReducers } from 'redux'
+import { LOGIN, SIGNUP, UPDATE_EMAIL, UPDATE_PASSWORD } from './user'
 
-const reducer = combineReducers({
-  user,
-});
-const middleware = composeWithDevTools(
-  applyMiddleware(thunkMiddleware, createLogger({collapsed: true})),
-);
-const store = createStore(reducer, middleware);
+const user = (state = {}, action) => {
+  switch (action.type) {
+    case UPDATE_EMAIL:
+      return { ...state, email: action.payload }
+    case UPDATE_PASSWORD:
+      return { ...state, password: action.payload }
+    case LOGIN:
+      return action.payload
+    case SIGNUP:
+      return action.payload
+    default:
+      return state
+  }
+}
 
-export default store;
+const rootReducer = combineReducers({
+  user
+})
+
+export default rootReducer

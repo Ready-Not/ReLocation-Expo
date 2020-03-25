@@ -1,24 +1,17 @@
 import React from 'react'
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button } from 'react-native'
 import firebase from '../config';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { updateEmail, updatePassword, signup } from '../store/user'
 
 class Signup extends React.Component {
-    constructor (props) {
-    super (props);
-    this.state = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: ''
-    }
-  }
 
+  //Right now it is going to forward you to the Profile page, even if signup is not sucessfull
+  //TBD: show errors if could not sign user up
   handleSignUp = () => {
-    const { email, password } = this.state
-    firebase.auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => this.props.navigation.navigate('Profile', {email: email}))
-        .catch(error => console.log(error))
+    this.props.signup(this.state)
+    this.props.navigation.navigate('Profile')
 }
 
     render() {
@@ -26,27 +19,27 @@ class Signup extends React.Component {
             <View style={styles.container}>
                 <TextInput
                     style={styles.inputBox}
-                    value={this.state.firstName}
-                    onChangeText={firstName => this.setState({ firstName })}
+                    // value={this.state.firstName}
+                    // onChangeText={firstName => this.setState({ firstName })}
                     placeholder='First Name'
                 />
                 <TextInput
                     style={styles.inputBox}
-                    value={this.state.lastName}
-                    onChangeText={lastName => this.setState({ lastName })}
+                    // value={this.state.lastName}
+                    // onChangeText={lastName => this.setState({ lastName })}
                     placeholder='Last Name'
                 />
                 <TextInput
                     style={styles.inputBox}
-                    value={this.state.email}
-                    onChangeText={email => this.setState({ email })}
+                    value={this.props.user.email}
+                    onChangeText={email => this.props.updateEmail(email)}
                     placeholder='Email'
                     autoCapitalize='none'
                 />
                 <TextInput
                     style={styles.inputBox}
-                    value={this.state.password}
-                    onChangeText={password => this.setState({ password })}
+                    value={this.props.user.password}
+                    onChangeText={password => this.props.updatePassword(password)}
                     placeholder='Password'
                     secureTextEntry={true}
                 />
@@ -60,6 +53,7 @@ class Signup extends React.Component {
         )
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -98,4 +92,17 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Signup
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({ signup, updateEmail, updatePassword }, dispatch)
+}
+
+const mapStateToProps = state => {
+  return {
+      user: state.user
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Signup)
