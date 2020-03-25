@@ -2,7 +2,7 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 
 const FIREBASE_CONFIG = {
-apiKey: Config.FIREBASE_CONFIG_apiKey,
+apiKey: "xxxxxxxxx",
 authDomain: "relocation-1ac3d.firebaseapp.com",
 databaseURL: "https://relocation-1ac3d.firebaseio.com",
 projectId: "relocation-1ac3d",
