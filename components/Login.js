@@ -3,15 +3,19 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button } from 'rea
 import firebase from '../config';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { updateEmail, updatePassword, login } from '../store/user'
+import { updateEmail, updatePassword, login, getUser } from '../store/user'
 
 class Login extends React.Component {
 
-  //Right now it is going to forward you to the Profile page, even if signup is not sucessfull
-  //TBD: show errors if could not sign user up
-  handleLogin = () => {
-    this.props.login()
-    this.props.navigation.navigate('Profile')
+componentDidMount = () => {
+  firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+          this.props.getUser(user.uid)
+          if (this.props.user != null) {
+              this.props.navigation.navigate('Profile')
+          }
+      }
+  })
 }
 
   render() {
@@ -31,8 +35,8 @@ class Login extends React.Component {
                   placeholder='Password'
                   secureTextEntry={true}
               />
-              <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText} onPress={this.handleLogin}>Login</Text>
+              <TouchableOpacity style={styles.button} onPress={() => this.props.login()}>
+                <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
               <Button title="Don't have an account yet? Sign up"
               onPress={() => this.props.navigation.navigate('Signup')}
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
 })
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ updateEmail, updatePassword, login }, dispatch)
+  return bindActionCreators({ updateEmail, updatePassword, login, getUser }, dispatch)
 }
 
 const mapStateToProps = state => {

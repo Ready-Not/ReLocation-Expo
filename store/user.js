@@ -37,9 +37,24 @@ export const login = () => {
           const { email, password } = getState().user
           console.log('from LOGIN THUNK', email, password)
           const response = await firebase.auth().signInWithEmailAndPassword(email, password)
-          dispatch({ type: LOGIN, payload: response.user })
+          dispatch(getUser(response.user.uid))
       } catch (e) {
           console.log(e)
+      }
+  }
+}
+
+export const getUser = uid => {
+  return async (dispatch, getState) => {
+      try {
+          const user = await firestore
+              .collection('users')
+              .doc(uid)
+              .get()
+
+          dispatch({ type: LOGIN, payload: user.data() })
+      } catch (e) {
+          alert(e)
       }
   }
 }
