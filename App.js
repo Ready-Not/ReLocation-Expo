@@ -45,6 +45,12 @@ import firebase from 'firebase';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+
+//To solve "can't find variable atob" error
+import {decode, encode} from 'base-64'
+if (!global.btoa) {  global.btoa = encode }
+if (!global.atob) { global.atob = decode }
+
 const Stack = createStackNavigator();
 
 class App extends Component {
