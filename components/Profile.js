@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
 import { connect } from 'react-redux'
 import firebase from '../config';
 
@@ -25,6 +25,8 @@ class Profile extends React.Component {
                 <TouchableOpacity style={styles.button} onPress={this.handleSignout}>
                 <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
+                <Button title="Set-Up a track?"
+                 />
             </View>
         )
     }
