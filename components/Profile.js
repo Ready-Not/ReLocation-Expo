@@ -2,11 +2,16 @@ import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import firebase from '../config';
+import registerForPushNotificationsAsync from '../utils/notifications'
 
 class Profile extends React.Component {
     handleSignout = () => {
         firebase.auth().signOut()
         this.props.navigation.navigate('Login')
+    }
+
+    componentDidMount () {
+      registerForPushNotificationsAsync()
     }
 
     render() {
