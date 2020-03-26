@@ -13,8 +13,8 @@ class FindContact extends Component {
     //do a database lookup to find anyone with that email
     //if exists, this.setState{found:user}
   }
-  sendInvite (uid) {
-    //figure out a way to send that user an invite to connect, if accepted, put in database
+  sendInvite () {
+    //figure out a way to send that user an invite to connect, if accepted, put in database using this.state.found
   }
 
   render() {
@@ -24,6 +24,7 @@ class FindContact extends Component {
         <TextInput
             onChangeText={email => this.setState({email})}
             placeholder="Enter email"
+            placeholderTextColor="#ddddddd"
           />
 
           <TouchableOpacity>
@@ -33,10 +34,10 @@ class FindContact extends Component {
     )} else {return(
       <View>
         {/* <Image src={this.state.found.imgURL}/> */}
-        <Textx>{this.state.found.first} {this.state.found.last}</Textx>
+        <Text>{this.state.found.first} {this.state.found.last}</Text>
         <Text>{this.state.found.email}</Text>
         <TouchableOpacity>
-          <Text onPress={() => this.sendInvite(this.state.found.uid)}>Send Invite</Text>
+          <Text onPress={this.sendInvite}>Send Invite</Text>
         </TouchableOpacity>
       </View>
     )}
