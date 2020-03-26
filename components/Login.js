@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { updateEmail, updatePassword, login, getUser } from '../store/user'
 
-class Login extends React.Component {
+class Login extends Component {
 
 componentDidMount = () => {
   firebase.auth().onAuthStateChanged(user => {
@@ -78,9 +78,6 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: '#fff'
   },
-  buttonSignup: {
-      fontSize: 12
-  }
 })
 
 const mapDispatchToProps = dispatch => {

@@ -1,28 +1,45 @@
 import React from 'react'
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, Button } from 'react-native'
-import firebase from '../config';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { updateEmail, updatePassword, signup } from '../store/user'
+import { updateEmail, updatePassword, signup, getUser } from '../store/user'
+import firebase from '../config';
 
 class Signup extends React.Component {
 
-  //Right now it is going to forward you to the Profile page, even if signup is not sucessfull
-  //TBD: show errors if could not sign user up
+  constructor (props) {
+    super (props);
+    this.state = {
+      firstName: '',
+      lastName: ''
+    }
+  }
+
+  componentDidMount = () => {
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            this.props.getUser(user.uid)
+            if (this.props.user != null) {
+                this.props.navigation.navigate('Profile')
+            }
+        }
+    })
+  }
+
 
     render() {
         return (
             <View style={styles.container}>
                 <TextInput
                     style={styles.inputBox}
-                    // value={this.state.firstName}
-                    // onChangeText={firstName => this.setState({ firstName })}
+                    value={this.state.firstName}
+                    onChangeText={firstName => this.setState({ firstName })}
                     placeholder='First Name'
                 />
                 <TextInput
                     style={styles.inputBox}
-                    // value={this.state.lastName}
-                    // onChangeText={lastName => this.setState({ lastName })}
+                    value={this.state.lastName}
+                    onChangeText={lastName => this.setState({ lastName })}
                     placeholder='Last Name'
                 />
                 <TextInput
@@ -39,7 +56,7 @@ class Signup extends React.Component {
                     placeholder='Password'
                     secureTextEntry={true}
                 />
-                <TouchableOpacity style={styles.button} onPress={() => this.props.signup()}>
+                <TouchableOpacity style={styles.button} onPress={() => this.props.signup(this.state)}>
                     <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
                 <Button title="Already have an account? Login"
@@ -89,7 +106,7 @@ const styles = StyleSheet.create({
 })
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({ signup, updateEmail, updatePassword }, dispatch)
+  return bindActionCreators({ signup, updateEmail, updatePassword, getUser }, dispatch)
 }
 
 const mapStateToProps = state => {
