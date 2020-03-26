@@ -16,6 +16,12 @@ class Profile extends React.Component {
                 <Text style={styles.textBox}>First name: {this.props.user.First}</Text>
                 <Text style={styles.textBox}>Last name: {this.props.user.Last}</Text>
                 <Text style={styles.textBox}>Email: {this.props.user.email}</Text>
+
+                {/* This is a temporary code just to make sure location APIs are connected and working */}
+                <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('Map')}>
+                <Text style={styles.buttonText}>Test location</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.button} onPress={this.handleSignout}>
                 <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
