@@ -1,8 +1,10 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
 
+import { FB_apiKey } from 'react-native-dotenv'
+
 const FIREBASE_CONFIG = {
-apiKey: "xxxxxxxxx",
+apiKey: FB_apiKey,
 authDomain: "relocation-1ac3d.firebaseapp.com",
 databaseURL: "https://relocation-1ac3d.firebaseio.com",
 projectId: "relocation-1ac3d",
