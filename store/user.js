@@ -58,7 +58,7 @@ export const getUser = uid => {
   }
 }
 
-export const signup = () => {
+export const signup = (newUser) => {
   return async (dispatch, getState) => {
       try {
         const { email, password } = getState().user
@@ -67,7 +67,9 @@ export const signup = () => {
           if (response.user.uid) {
             const user = {
                 uid: response.user.uid,
-                email: email
+                email: email,
+                First: newUser.firstName,
+                Last: newUser.lastName
             }
             firestore.collection('users')
                 .doc(response.user.uid)
