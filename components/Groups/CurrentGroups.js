@@ -18,5 +18,18 @@ const CurrentGroups = () => {
       </View>
     )
 }
+const mapStateToProps = () => {
+  return {
+    user: state.user,
+    contacts: state.user.contacts,
+    groups: state.user.groups
+  }
+  }
+  const mapDispatchToProps = dispatch => {
 
-export default CurrentGroups
+  }
+
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(CurrentGroups)

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, ListItem} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import {leaveGroup} from '.../store/user'
 
 class SingleGroup extends Component {
   constructor() {
@@ -10,6 +11,7 @@ class SingleGroup extends Component {
   }
 
   leaveGroup () {
+    this.props.leaveGroup(this.props.group.groupId, this.props.user.uid)
     //figure out a way to remove this user from group and send them back to an updated Current Groups screen
   }
 
@@ -41,3 +43,20 @@ class SingleGroup extends Component {
     )
   }
 }
+const mapStateToProps = () => {
+  return {
+    user: state.user,
+    contacts: state.user.contacts,
+    groups: state.user.groups
+  }
+  }
+  const mapDispatchToProps = dispatch => {
+    return {
+      leaveGroup: (groupId, uid) => dispatch(leaveGroup(groupI, uid)),
+    }
+  }
+
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(SingleGroup)
