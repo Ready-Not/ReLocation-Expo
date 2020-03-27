@@ -14,10 +14,11 @@ class SingleTrack extends Component {
   }
 
   render() {
-    const {track} = this.props
+    // const {track} = this.props
     return (
       <View>
-        <Text>Tracking {track.trackee.first} {track.trackee.last}</Text>
+        <Text>Single Track Instance</Text>
+        {/* <Text>Tracking {track.trackee.first} {track.trackee.last}</Text>
         <Text>Trackers:</Text>
         {track.trackers.map(tracker => {
           if (tracker.name) {
@@ -29,7 +30,7 @@ class SingleTrack extends Component {
         })}
         <TouchableOpacity>
           <Text onPress={this.endTrack}>End Track</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
       </View>
     )
   }
