@@ -1,6 +1,7 @@
 import React, {Component, useReducer} from 'react';
 import {StyleSheet, Text, View, Switch} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import {removeContact, changeConsent, addContact} from '.../store/user'
 
 class SingleContact extends Component {
   constructor (props) {
@@ -10,12 +11,18 @@ class SingleContact extends Component {
 
   handleValueChange () {
     //figure out a way to change permissions based on state boolean of this.state.switch
+    const {uid} = this.props.solo
+    this.props.changeConsent(uid, value)
   }
-  removeContact() {
+  delete() {
+    const {uid} = this.props.solo
+    this.props.removeContact(uid)
     //database update to remove solo from this user's array
   }
-  addContact () {
+  sendInvite () {
     //notify other user that they have a friend request, pending acceptance, add solo and user BOTH to each other's contact lists
+    const {uid} = this.props.solo
+    this.props.addContact(uid)
   }
 
   render() {
@@ -31,7 +38,7 @@ class SingleContact extends Component {
         value={solo.canTrack}
         />
         <TouchableOpacity>
-          <Text onPress={this.removeContact}>X</Text>
+          <Text onPress={this.delete}>X</Text>
         </TouchableOpacity>
       </View>
     )}
@@ -41,12 +48,28 @@ class SingleContact extends Component {
           <Text>{solo.first} {solo.last}</Text>
           <Text>{solo.email}</Text>
           <TouchableOpacity>
-          <Text onPress={this.addContact}>Send Invite</Text>
+          <Text onPress={this.sendInvite}>Send Invite</Text>
         </TouchableOpacity>
         </View>
       )
     }
   }
 }
+const mapStateToProps = () => {
+  return {
+    user: state.user,
+    contacts: state.user.contacts
+  }
+  }
+  const mapDispatchToProps = dispatch => {
+    return {
+      removeContact: (uid) => dispatch(removeContact(uid)),
+      changeConsent: (uid, bool) => dispatch(changeConsent(uid, bool)),
+      addContact: (uid) => dispatch(addContact(uid)),
+    }
+  }
 
-export default SingleContact
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(SingleContact)
