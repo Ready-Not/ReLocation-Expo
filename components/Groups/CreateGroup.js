@@ -1,16 +1,14 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, ListItem, FlatList} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-//I realized that I wasn't sure how we want to add people to a group, do we want all contacts with a button saying adD? do we want a series of text inputs where they invite people on submit?
-
+import {createGroup} from '.../store/user'
 
 class CreateGroup extends Component {
   constructor(){
     super()
     this.state={
       name: '',
-      groupees: [],
-      contacts: []
+      groupees: [user.uid],
     }
   }
   componentDidMount () {
@@ -22,7 +20,8 @@ class CreateGroup extends Component {
   }
 
   handleSubmit () {
-    //figure out a way to create new group in database with groupees/name properties, AND send all the users notifications that they've been added to a new group with name ___ (and maybe who added them)
+    this.props.createGroup(this.state.name, this.state.groupees)
+    //send all the users notifications that they've been added to a new group with name ___ (and maybe who added them)
   }
   addToGroup (item) {
     let group = this.state.groupees
@@ -77,5 +76,19 @@ class CreateGroup extends Component {
     )
   }
 }
+const mapStateToProps = () => {
+return {
+  user: state.user,
+  contacts: state.user.contacts,
+}
+}
+const mapDispatchToProps = dispatch => {
+return {
+  createGroup: (name, groupees) => dispatch(createGroup(name, groupees)),
+}
+}
 
-export default CreateGroup
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateGroup)

@@ -9,9 +9,8 @@ class FindContact extends Component {
     this.handleSubmit=this.handleSubmit.bind(this)
   }
 
-  search (email) {
-    //do a database lookup to find anyone with that email
-    //if exists, this.setState{found:user}
+  searchOne (email) {
+    this.props.search(email)
   }
   sendInvite () {
     //figure out a way to send that user an invite to connect, if accepted, put in database using this.state.found
@@ -19,7 +18,7 @@ class FindContact extends Component {
 
   render() {
     // let currentContacts = this.state.user.associatedUsers
-    if (!this.state.found) {return(
+    if (!this.props.found) {return(
       <View>
         <TextInput
             onChangeText={email => this.setState({email})}
@@ -34,8 +33,8 @@ class FindContact extends Component {
     )} else {return(
       <View>
         {/* <Image src={this.state.found.imgURL}/> */}
-        <Text>{this.state.found.first} {this.state.found.last}</Text>
-        <Text>{this.state.found.email}</Text>
+        <Text>{this.props.found.first} {this.props.found.last}</Text>
+        <Text>{this.props.found.email}</Text>
         <TouchableOpacity>
           <Text onPress={this.sendInvite}>Send Invite</Text>
         </TouchableOpacity>
@@ -44,4 +43,22 @@ class FindContact extends Component {
   }
 }
 
-export default FindContact
+const mapStateToProps = () => {
+  return {
+    user: state.user,
+    contacts: state.user.contacts,
+    found: state.user.found
+  }
+  }
+  const mapDispatchToProps = dispatch => {
+    return {
+      removeContact: (uid) => dispatch(removeContact(uid)),
+      search: (email) => dispatch(search(email)),
+      addContact: (uid) => dispatch(addContact(uid)),
+    }
+  }
+
+  export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(FindContact)
