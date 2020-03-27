@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import firebase from '../config';
 import registerForPushNotificationsAsync from '../utils/notifications'
+import { CONTACTS } from 'expo-permissions';
+import {getContacts, getGroups} from '../store/user'
 
 class Profile extends React.Component {
     handleSignout = () => {
@@ -15,6 +17,8 @@ class Profile extends React.Component {
     }
 
     render() {
+        const contacts = this.props.contacts
+        const groups = this.props.groups
         return (
             <View style={styles.container}>
                 <Text style={styles.textBox}>My Profile:</Text>
@@ -69,8 +73,16 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
     return {
-        user: state.user
+        user: state.user,
+        contacts: state.user.contacts,
+        groups: state.user.groups
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        getContacts: (arr) => dispatch(getContacts(arr)),
+        getGroups: (uid) => dispatch(getGroups(uid))
     }
 }
 
-export default connect(mapStateToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)
