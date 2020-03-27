@@ -60,23 +60,23 @@ class Map extends Component {
           <View style={styles.mapContainer}>
             <MapView
               provider={PROVIDER_GOOGLE}
-              style={styles.map}
-              region={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.015,
-                longitudeDelta: 0.0121,
-              }}
+               style={styles.map}
+              // region={{
+              //   latitude: 37.78825,
+              //   longitude: -122.4324,
+              //   latitudeDelta: 0.015,
+              //   longitudeDelta: 0.0121,
+              // }}
             />
           </View>
-          <View>
+          {/* <View>
             <Text style={styles.textField}>My current location:</Text>
             <Text style={styles.textField}> {this.state.latitude} </Text>
             <Text style={styles.textField}> {this.state.longitude} </Text>
             <Text style={styles.textField}> {this.state.error} </Text>
             <Text style={styles.textField}> {this.state.address} </Text>
             <Text style={styles.textField}> {this.state.error2} </Text>
-          </View>
+          </View> */}
         </View>
       </SafeAreaView>
 
@@ -93,10 +93,10 @@ const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  textField: {
-    backgroundColor: 'pink',
-    alignItems: 'center',
-    fontSize: 20,
-  },
+  // textField: {
+  //   backgroundColor: 'pink',
+  //   alignItems: 'center',
+  //   fontSize: 20,
+  // },
 });
 export default Map;

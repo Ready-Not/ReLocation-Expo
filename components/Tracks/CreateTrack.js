@@ -4,7 +4,7 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { MapView } from 'expo'
 import { connect } from 'react-redux'
 import firebase from '../../config';
-
+import Map from '../Map'
 //component shows form for creating a track instance
 
 class TrackForm extends React.Component {
@@ -36,7 +36,7 @@ class TrackForm extends React.Component {
         //value={this.state.trackee}
         >
         </Dropdown>
-
+        <Map />
         <TextInput
        // value={this.state.location}
         placeholder='location'
