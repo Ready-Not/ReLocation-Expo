@@ -9,12 +9,17 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
 import MyMaps from './components/Map';
+import TrackForm from './components/Tracks/CreateTrack';
+import AllTracks from './components/Tracks/CurrentTracks';
+import SingleTrack from './components/Tracks/SingleTrack';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 //To solve "can't find variable atob" error
 import {decode, encode} from 'base-64'
+
+
 
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -31,6 +36,9 @@ function LogIn() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Map" component={MyMaps} />
+      <Stack.Screen name="TrackForm" component={TrackForm} />
+      <Stack.Screen name="AllTracks" component={AllTracks} />
+      <Stack.Screen name="SingleTrack" component={SingleTrack} />
     </Stack.Navigator>
   )
 }

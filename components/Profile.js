@@ -31,6 +31,7 @@ class Profile extends React.Component {
                 <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
                 <Button title="Set-Up a track?"
+                onPress={() => this.props.navigation.navigate('TrackForm')}
                  />
             </View>
         )
