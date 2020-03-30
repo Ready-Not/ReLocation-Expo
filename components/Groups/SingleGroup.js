@@ -1,22 +1,21 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, ListItem} from 'react-native';
+import {connect} from 'react-redux'
+import {StyleSheet, Text, View, TouchableOpacity, ListItem, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {leaveGroup} from '.../store/user'
+import {leaveGroup} from '../../store/user'
 
 class SingleGroup extends Component {
   constructor() {
     super()
-    this.state={}
-    this.leaveGroup=this.leaveGroup.bind(this)
   }
 
   leaveGroup () {
     this.props.leaveGroup(this.props.group.groupId, this.props.user.uid)
-    //figure out a way to remove this user from group and send them back to an updated Current Groups screen
+    this.props.navigation.goBack()
   }
 
   render() {
-    const {group} = this.props
+    const group = navigation.getParam('group')
     return (
       <View>
         <Text>{group.name}</Text>
@@ -27,7 +26,7 @@ class SingleGroup extends Component {
           title={`${user.first} ${user.last}`}
           subtitle={user.email}
           bottomDivider
-          // onPress={NAV_TO_SOLO_CONTACT with props solo=user}
+          onPress={() => this.props.navigation.navigate('SingleContact', {solo: user})}
           />
         })}
         <Text>Actively Tracking:</Text>
@@ -52,11 +51,9 @@ const mapStateToProps = () => {
   }
   const mapDispatchToProps = dispatch => {
     return {
-      leaveGroup: (groupId, uid) => dispatch(leaveGroup(groupI, uid)),
+      leaveGroup: (groupId, uid) => dispatch(leaveGroup(groupId, uid)),
     }
   }
 
-  export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SingleGroup)
+  connect(mapStateToProps, mapDispatchToProps)(SingleGroup)
+  export default SingleGroup

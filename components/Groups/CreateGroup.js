@@ -1,26 +1,28 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, ListItem, FlatList} from 'react-native';
+import { connect } from 'react-redux';
+import {StyleSheet, Text, View, TouchableOpacity, ListItem, FlatList, TextInput, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {createGroup} from '.../store/user'
+import {createGroup} from '../../store/user';
 
 class CreateGroup extends Component {
   constructor(){
     super()
     this.state={
       name: '',
-      groupees: [user.uid],
+      groupees: [],
     }
   }
   componentDidMount () {
     this.setState(
       {contacts: this.props.contacts,
-      inMemoryContacts: this.props.contacts}
+        inMemoryContacts: this.props.contacts}
       //assuming we get contacts as props from redux store
     )
   }
 
   handleSubmit () {
-    this.props.createGroup(this.state.name, this.state.groupees)
+    this.props.createGroup(this.state.name, [...this.state.groupees, user.uid])
+    this.props.navigation.goBack()
     //send all the users notifications that they've been added to a new group with name ___ (and maybe who added them)
   }
   addToGroup (item) {
@@ -47,6 +49,14 @@ class CreateGroup extends Component {
   }
 
   render () {
+    if (!this.props.contacts) {
+      return <View>
+        <Text>Add Contacts to form a group!</Text>
+        <Button title="Find Contacts"
+            onPress={() => this.props.navigation.navigate('FindContact')}
+          />
+      </View>
+    } else {
     return(
       <View>
         <TextInput
@@ -73,7 +83,7 @@ class CreateGroup extends Component {
           </View>)}
         />
       </View>
-    )
+    )}
   }
 }
 const mapStateToProps = () => {
@@ -88,7 +98,5 @@ return {
 }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CreateGroup)
+ connect(mapStateToProps, mapDispatchToProps)(CreateGroup)
+ export default CreateGroup
