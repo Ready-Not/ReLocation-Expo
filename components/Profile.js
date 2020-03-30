@@ -37,6 +37,12 @@ class Profile extends React.Component {
                 <Button title="Set-Up a track?"
                 onPress={() => this.props.navigation.navigate('TrackForm')}
                  />
+                 <Button title="My Groups"
+                onPress={() => this.props.navigation.navigate('CurrentGroups')}
+                 />
+                 <Button title="My Contacts"
+                onPress={() => this.props.navigation.navigate('CurrentContacts')}
+                 />
             </View>
         )
     }

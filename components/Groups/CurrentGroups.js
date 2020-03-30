@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { connect } from 'react-redux';
+import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 
-const CurrentGroups = () => {
-    //let groups = user groups from state/async storage
-    return(
+class CurrentGroups extends Component {
+  render() {
+    const groups = this.props.groups
+    if (groups) {return(
       <View>
         {groups.map(group => {
           return <ListItem key={group.uid}
@@ -12,11 +14,21 @@ const CurrentGroups = () => {
           title={group.name}
           subtitle={`${group.usersInGroup.length} People`}
           bottomDivider
-          // onPress={NAV_TO_SOLO_Group with props solo=groupInfo}
+          onPress={this.props.navigation.navigate('SingleGroup'), {group: group}}
           />
         })}
+        <Button title="Create a Group"
+            onPress={() => this.props.navigation.navigate('CreateGroup')}
+          />
       </View>
-    )
+    )} else {return (
+      <View>
+        <Text>No current groups</Text>
+        <Button title="Create a Group"
+            onPress={() => this.props.navigation.navigate('CreateGroup')}
+          />
+      </View>)}
+  }
 }
 const mapStateToProps = () => {
   return {
@@ -24,12 +36,7 @@ const mapStateToProps = () => {
     contacts: state.user.contacts,
     groups: state.user.groups
   }
-  }
-  const mapDispatchToProps = dispatch => {
+}
 
-  }
-
-  export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(CurrentGroups)
+  connect(mapStateToProps)(CurrentGroups)
+  export default CurrentGroups

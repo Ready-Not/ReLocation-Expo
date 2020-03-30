@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, ListItem} from 'react-native';
+import {connect} from 'react-redux'
+import {StyleSheet, Text, View, TouchableOpacity, ListItem, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import { render } from 'react-dom';
 
-const CurrentContacts = () => {
-    let {contacts} = this.props
+class CurrentContacts extends Component {
 
-    return(
+  render(){
+    let contacts = this.props.contacts
+    if (contacts) {return(
       <View>
         {contacts.map(contact => {
           return <ListItem key={contact.uid}
@@ -13,11 +16,21 @@ const CurrentContacts = () => {
           title={`${contact.first} ${contact.last}`}
           subtitle={contact.email}
           bottomDivider
-          // onPress={this.props.navigation.navigate('SingleContact')}
+          onPress={this.props.navigation.navigate('SingleContact', {solo: contact})}
           />
         })}
+        <Button title="Find Contacts"
+            onPress={() => this.props.navigation.navigate('FindContact')}
+          />
       </View>
-    )
+    )} else {return (
+      <View>
+        <Text>No current contacts</Text>
+        <Button title="Find Contacts"
+            onPress={() => this.props.navigation.navigate('FindContact')}
+          />
+      </View>)}
+  }
 }
 const mapStateToProps = () => {
   return {
@@ -26,10 +39,8 @@ const mapStateToProps = () => {
   }
   }
   const mapDispatchToProps = dispatch => {
-
+    return{}
   }
+  connect(mapStateToProps, mapDispatchToProps)(CurrentContacts)
+  export default CurrentContacts
 
-  export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(CurrentContacts)

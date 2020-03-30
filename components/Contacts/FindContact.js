@@ -1,19 +1,20 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {connect} from 'react-redux'
+import {StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import {search, addContact, } from '../../store/user';
 
 class FindContact extends Component {
   constructor () {
     super()
     this.state={}
-    this.handleSubmit=this.handleSubmit.bind(this)
   }
 
   searchOne (email) {
     this.props.search(email)
   }
   sendInvite () {
-    //figure out a way to send that user an invite to connect, if accepted, put in database using this.state.found
+    //figure out a way to send that user an invite to connect, if accepted, put in database using found
   }
 
   render() {
@@ -52,13 +53,11 @@ const mapStateToProps = () => {
   }
   const mapDispatchToProps = dispatch => {
     return {
-      removeContact: (uid) => dispatch(removeContact(uid)),
+      // removeContact: (uid) => dispatch(removeContact(uid)),
       search: (email) => dispatch(search(email)),
       addContact: (uid) => dispatch(addContact(uid)),
     }
   }
 
-  export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(FindContact)
+connect(mapStateToProps, mapDispatchToProps)(FindContact)
+export default FindContact
