@@ -12,6 +12,8 @@ export const GET_GROUPS = 'GET_GROUPS'
 export const SEARCH = 'SEARCH'
 export const CREATE_GROUP = 'CREATE_GROUP'
 export const LEAVE_GROUP = 'LEAVE_GROUP'
+export const ADD_CONTACT = 'ADD_CONTACT'
+export const REMOVE_CONTACT = 'REMOVE_CONTACT'
 
 export const updateEmail = email => {
   return {
@@ -104,11 +106,50 @@ export const getContacts = arr => {
           email: user.email,
           imgURL: user.imgURL,
           canTrack: arr[i].canTrack,
+          status: arr[i].status,
           uid: user.uid
         }
       })
       dispatch({type: GET_CONTACTS, payload: finalContacts})
     } catch(e) {alert(e)}
+  }
+}
+
+export const addContact = (myId, theirId, status) => {
+  return async dispatch => {
+    try {
+      if (status==='requested') {
+        //confirm, so change both to accepted
+        const myProf = await firestore.collection('users').doc(myId).get()
+        const myWorking = myProf.data()
+        myWorking.associatedUsers.forEach(el => {
+          if (el.userRef===theirId) {
+            el.status='accepted'
+          }
+        })
+        const myNew = await firestore.collection('users').doc(myId).update(myWorking)
+
+        const theirProf = await firestore.collection('users').doc(theirId).get()
+        const theirWorking = theirProf.data()
+        theirWorking.associatedUsers.forEach(el => {
+          if (el.userRef===myId) {
+            el.status='accepted'
+          }
+        })
+        const theirNew = await firestore.collection('users').doc(theirId).update(theirWorking)
+        dispatch({type: ADD_CONTACT, payload: [myNew, theirNew]})
+      }
+      if (status==='denied') {
+        //denied to pending on mine
+        //wasdenied to requested on theirs
+      }
+      else {
+        //sening request for first time
+        const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: "pending"})})
+        const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: myId, canTrack: false, status: "requested"})})
+        dispatch({type: ADD_CONTACT, payload: [myNew.data(), theirNew.data()]})
+      }
+    } catch(e){alert(e)}
   }
 }
 
@@ -128,6 +169,15 @@ export const getGroups = uid => {
     } catch(e) {alert(e)}
   }
 }
+
+// export const leaveGroup = (groupId, userId) => {
+//   return async dispatch => {
+//     try {
+//       const updated = await firestore.collection('groups').doc(groupId).update({usersInGroup: firebase.firestore.FieldValue.arrayRemove(userId)})
+//       dispatch(getGroups())
+//     } catch(e){alert(e)}
+//   }
+// }
 
 
 export const signup = (newUser) => {
