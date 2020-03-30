@@ -4,6 +4,7 @@ const GET_TRACKS = 'GET_TRACKS'
 const CANCEL_TRACK = 'CANCEL_TRACK'
 const CONFIRM_TRACK = 'CONFIRM_TRACK'
 const DECLINE_TRACK = 'DECLINE_TRACK'
+const SET_TRACK = 'SET_TRACK'
 
 
 //TRACKS ACTIONS
@@ -26,6 +27,11 @@ const confirmTrack = trackId => ({
 const declineTrack = trackId => ({
   type: DECLINE_TRACK,
   trackId
+})
+
+const setTrack = track => ({
+  type: SET_TRACK,
+  track
 })
 
 //TRACKS THUNKS
@@ -89,6 +95,25 @@ export const declineTrackThunk = (id) => {
   }
 }
 
+export const setTrackThunk = (newTrack) => {
+  return async (dispatch, getState) => {
+    try {
+      const currentUser = await firebase.auth().currentUser
+      const track = {
+        trackee: currentUser.uid,
+        ETA: newTrack.ETA,
+        currentLocation: newTrack.currentLocation,
+        confirm: 'pending',
+        status: 'open'
+      }
+      firestore.collection('tracks')
+                .add(track)
+      dispatch({ type: SET_TRACK, payload: track })
+    } catch (e) {
+      alert(e)
+    }
+  }
+}
 
 const initialState = []
 
@@ -116,6 +141,11 @@ const tracksReducer = (state = initialState, action) => {
         // return new tracks array
         true
       )
+      case SET_TRACK:
+        return (
+          [...state, action.payload]
+
+        )
     default:
       return state
   }
