@@ -1,15 +1,27 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import firebase from '../../config';
 import Map from '../Map'
+import { setTrackThunk } from '../../store/tracks'
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+
+
 class TrackForm extends React.Component {
 
   // state to locally store track info . . . not sure if this is necessary
   constructor (props) {
     super (props);
+    this.state = {
+      currentLocation: null,
+      ETA: new Date ()
+    }
 
   }
 
@@ -22,39 +34,76 @@ class TrackForm extends React.Component {
 
   //function to submit track instance
 
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      console.log('no permissions were granted')
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({ currentLocation: {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    }
+  });
+  };
+
+  componentDidMount () {
+    this._getLocationAsync()
+  }
+
   render() {
     let data = [{value: 'Martha'}, {value: 'Jen'}, {value: 'Julia'}, {value: 'Luis'}, {value: 'James'}, {value: 'Cyndi'}]
     return (
        <View style={styles.container}>
-       <Dropdown
+       {/* <Dropdown
         label="trackee"
         style={styles.inputBox}
         data={data}
         itemCount={3}
         //value={this.state.trackee}
         >
-        </Dropdown>
+        </Dropdown> */}
 
-        <TextInput
+        {/* <TextInput
        // value={this.state.location}
         placeholder='location'
         style={styles.inputBox}
-        ></TextInput>
+        ></TextInput> */}
 
-        <TextInput
+        {/* <TextInput
         //value={this.state.eta}
         placeholder='eta'
         style={styles.inputBox}
-        ></TextInput>
+        ></TextInput> */}
 
-        <TextInput
+        <DateTimePicker
+          style={{ width: 200 }}
+          value={this.state.ETA}
+          display="default"
+          onChange={(event, selectedDate) => {this.setState({ETA: selectedDate})}}
+        />
+
+        <DateTimePicker
+          style={{ width: 200 }}
+          value={this.state.ETA}
+          mode={'time'}
+          is24Hour={true}
+          display="default"
+          onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
+        />
+
+
+        {/* <TextInput
        // value={this.state.tracker}
         placeholder='trackers'
         style={styles.inputBox}
-        ></TextInput>
+        ></TextInput> */}
 
-        <Button title="Submit Your Tracking Request" style={styles.button}
-         onPress={() => this.props.navigation.navigate('AllTracks')}
+        <Button title="Submit Your Tracking Request" onPress={() => {
+          this.props.setTrackThunk(this.state)
+          this.props.navigation.navigate('Profile')}
+        }
         />
 
       </View>
@@ -107,6 +156,7 @@ const mapDispatchToProps = dispatch => {
   //getFriends Thunk
   // createTrack Thunk
   //createLocation Thunk
+  return bindActionCreators({ setTrackThunk }, dispatch)
 
 }
 
@@ -116,6 +166,10 @@ const mapStateToProps = state => {
 }
 
 
-export default TrackForm
+export default connect(
+  // mapStateToProps,
+  null,
+  mapDispatchToProps
+)(TrackForm)
 
 
