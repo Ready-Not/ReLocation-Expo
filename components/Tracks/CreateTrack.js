@@ -1,12 +1,10 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
-import { MapView } from 'expo'
+import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
 import firebase from '../../config';
 import Map from '../Map'
-//component shows form for creating a track instance
-
 class TrackForm extends React.Component {
 
   // state to locally store track info . . . not sure if this is necessary
@@ -36,7 +34,7 @@ class TrackForm extends React.Component {
         //value={this.state.trackee}
         >
         </Dropdown>
-        <Map />
+
         <TextInput
        // value={this.state.location}
         placeholder='location'
@@ -56,7 +54,7 @@ class TrackForm extends React.Component {
         ></TextInput>
 
         <Button title="Submit Your Tracking Request" style={styles.button}
-         onPress={() => this.props.navigation.navigate('SingleTrack')}
+         onPress={() => this.props.navigation.navigate('AllTracks')}
         />
 
       </View>

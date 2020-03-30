@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux';
+import {getTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk} from '../../store/tracks'
+
 
 class SingleTrack extends Component {
   constructor() {
@@ -17,7 +20,7 @@ class SingleTrack extends Component {
     // const {track} = this.props
     return (
       <View>
-        <Text>Single Track Instance</Text>
+        <Text>Single Track Instance!</Text>
         {/* <Text>Tracking {track.trackee.first} {track.trackee.last}</Text>
         <Text>Trackers:</Text>
         {track.trackers.map(tracker => {
@@ -36,4 +39,18 @@ class SingleTrack extends Component {
   }
 }
 
-export default SingleTrack
+const mapDispatchToProps = dispatch => ({
+  getTracks: () => dispatch(getTracksThunk()),
+  cancelTrack: () => dispatch(cancelTrackThunk()),
+  confirmTrack: () => dispatch(confirmTrackThunk()),
+  declineTrack: () => dispatch(declineTrackThunk())
+})
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleTrack)
+
