@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
@@ -78,20 +78,23 @@ class TrackForm extends React.Component {
         ></TextInput> */}
 
         <DateTimePicker
-          style={{ width: 200 }}
           value={this.state.ETA}
-          display="default"
-          onChange={(event, selectedDate) => {this.setState({ETA: selectedDate})}}
-        />
-
-        <DateTimePicker
           style={{ width: 200 }}
-          value={this.state.ETA}
           mode={'time'}
           is24Hour={true}
           display="default"
+          onChange={(event, selectedTime) => this.setState({ETA: selectedTime})}
+        />
+
+        <DateTimePicker
+          value={this.state.ETA}
+          style={{ width: 200 }}
+          display="default"
           onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
         />
+
+        {/* <MapView style={styles.mapStyle} /> */}
+
 
 
         {/* <TextInput
@@ -150,7 +153,11 @@ const styles = StyleSheet.create({
   },
   buttonSignup: {
       fontSize: 12
-  }
+  },
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
 })
 
 // functions in the store to make calls to the firestore.

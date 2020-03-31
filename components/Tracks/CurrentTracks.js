@@ -49,6 +49,7 @@ class AllTracks extends React.Component {
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('SingleTrack')}>
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
+                <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
 
               <Button title="Cancel track"
