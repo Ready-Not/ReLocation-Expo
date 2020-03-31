@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {StyleSheet, Text, View, TouchableOpacity, ListItem, FlatList, TextInput, Button} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {createGroup} from '../../store/user';
 
 class CreateGroup extends Component {
   constructor(){
     super()
-    this.state={
+    this.state = {
       name: '',
       groupees: [],
     }
@@ -16,32 +16,35 @@ class CreateGroup extends Component {
     this.setState(
       {contacts: this.props.contacts,
         inMemoryContacts: this.props.contacts}
-      //assuming we get contacts as props from redux store
     )
   }
 
-  handleSubmit () {
-    this.props.createGroup(this.state.name, [...this.state.groupees, user.uid])
+  handleSubmit (uid) {
+    console.log('from createGroup', uid)
+    const users = [...this.state.groupees, uid]
+    this.props.createGroup(this.state.name, this.state.groupees)
     this.props.navigation.goBack()
     //send all the users notifications that they've been added to a new group with name ___ (and maybe who added them)
   }
   addToGroup (item) {
-    let group = this.state.groupees
-    let newGroup = group.push(item.uid)
-    this.setState({groupees: newGroup})
+    if (!this.state.groupees.includes(item.uid)) {
+      let newGroup = [...this.state.groupees, item.uid]
+      this.setState({groupees: newGroup})
+    }
+    console.log(this.state.groupees)
   }
 
   renderItem = ({item}) => {
     return (
       <View>
-        <Text>{item.first} {item.last}</Text>
-        <Text onPress={item => this.addToGroup(item)}> + </Text>
+        <Text>{item.First} {item.Last}</Text>
+        <Button title="Add" onPress={this.addToGroup(item)} />
       </View>
     )}
 
   searchContacts = (value) => {
     const filteredContacts = this.state.inMemoryContacts.filter(contact => {
-      let contactLower = (contact.first + ' ' + contact.last).toLowerCase()
+      let contactLower = (contact.First + ' ' + contact.Last).toLowerCase()
       let searchLower = value.toLowerCase()
       return contactLower.indexOf(searchLower) > -1
     })
@@ -49,6 +52,9 @@ class CreateGroup extends Component {
   }
 
   render () {
+    if (!this.props.user) {
+      return <View><Text>Loading...</Text></View>
+    }
     if (!this.props.contacts) {
       return <View>
         <Text>Add Contacts to form a group!</Text>
@@ -60,17 +66,16 @@ class CreateGroup extends Component {
     return(
       <View>
         <TextInput
-          onChangeText={name => this.setState({name})}
+          value={this.state.name}
+          onChangeText={name => this.setState({name: name})}
           placeholder="Group Name"
-          placeholderTextColor="#ddddddd"
         />
         <TouchableOpacity>
-          <Text onPress={this.handleSubmit}>Create Group</Text>
+          <Text onPress={() => this.handleSubmit(this.props.user.uid)}>Create Group</Text>
         </TouchableOpacity>
 
         <TextInput
           placeholder="Search"
-          placeholderTextColor="#ddddddd"
           onChangeText={(value)=> this.searchContacts(value)}
         />
         <FlatList
@@ -86,17 +91,14 @@ class CreateGroup extends Component {
     )}
   }
 }
-const mapStateToProps = () => {
+const mapStateToProps = state => {
 return {
   user: state.user,
   contacts: state.user.contacts,
 }
 }
-const mapDispatchToProps = dispatch => {
-return {
+const mapDispatchToProps = dispatch => ({
   createGroup: (name, groupees) => dispatch(createGroup(name, groupees)),
-}
-}
+})
 
- connect(mapStateToProps, mapDispatchToProps)(CreateGroup)
- export default CreateGroup
+export default connect(mapStateToProps, mapDispatchToProps)(CreateGroup)

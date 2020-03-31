@@ -14,7 +14,7 @@ import AllTracks from './components/Tracks/CurrentTracks';
 import SingleTrack from './components/Tracks/SingleTrack';
 import SingleContact from './components/Contacts/SingleContact';
 import FindContact from './components/Contacts/FindContact';
-import CurrentContacts from './components/Contacts/CurrentContacts';
+import {CurrentContacts} from './components/Contacts/CurrentContacts';
 import SingleGroup from './components/Groups/SingleGroup';
 import CreateGroup from './components/Groups/CreateGroup';
 import CurrentGroups from './components/Groups/CurrentGroups';

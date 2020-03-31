@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import {StyleSheet, Text, View, TouchableOpacity, ListItem, Button} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {leaveGroup} from '../../store/user'
+import {ListItem} from 'react-native-elements';
 
 class SingleGroup extends Component {
   constructor() {
@@ -15,7 +16,7 @@ class SingleGroup extends Component {
   }
 
   render() {
-    const group = navigation.getParam('group')
+    const group = this.props.route.params.group
     return (
       <View>
         <Text>{group.name}</Text>
@@ -23,7 +24,7 @@ class SingleGroup extends Component {
         {group.usersInGroup.map(user => {
           return <ListItem key={user.uid}
           leftAvatar={{ source: { uri: user.imgURL} }}
-          title={`${user.first} ${user.last}`}
+          title={`${user.First} ${user.Last}`}
           subtitle={user.email}
           bottomDivider
           onPress={() => this.props.navigation.navigate('SingleContact', {solo: user})}
@@ -49,11 +50,8 @@ const mapStateToProps = () => {
     groups: state.user.groups
   }
   }
-  const mapDispatchToProps = dispatch => {
-    return {
+  const mapDispatchToProps = dispatch => ({
       leaveGroup: (groupId, uid) => dispatch(leaveGroup(groupId, uid)),
-    }
-  }
+  })
 
-  connect(mapStateToProps, mapDispatchToProps)(SingleGroup)
-  export default SingleGroup
+  export default connect(mapStateToProps, mapDispatchToProps)(SingleGroup)

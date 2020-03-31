@@ -1,10 +1,8 @@
 import React, {Component, useReducer} from 'react';
 import {connect} from 'react-redux'
-import {StyleSheet, Text, View, Switch} from 'react-native';
+import {StyleSheet, Text, View, Switch, TouchableOpacity} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {
-  // removeContact, changeConsent,
-  addContact} from '../../store/user';
+import {removeContact, changeConsent, addContact} from '../../store/user';
 
 class SingleContact extends Component {
   constructor (props) {
@@ -13,29 +11,31 @@ class SingleContact extends Component {
 
   handleValueChange () {
     //figure out a way to change permissions based on state boolean of this.state.switch
-    const uid = navigation.getParam('solo').uid
-    this.props.changeConsent(uid, value)
+    const myId = this.props.user.uid
+    const theirId = this.props.route.params.solo.uid
+    this.props.changeConsent(myId, theirId, value)
   }
   delete() {
-    const uid = navigation.getParam('solo').uid
-    // this.props.removeContact(uid)
+    const myId = this.props.user.uid
+    const theirId = this.props.route.params.solo.uid
+    this.props.removeContact(myId, theirId)
     this.props.navigation.goBack()
     //database update to remove solo from this user's array
   }
   sendInvite () {
     //notify other user that they have a friend request, pending acceptance, add solo and user BOTH to each other's contact lists
-    const theirId = navigation.getParam('solo').uid
+    const theirId = this.props.route.params.uid
     const myId = this.props.user.uid
-    const status = navigation.getParam('solo').status
+    const status = this.props.route.params.solo.status
     this.props.addContact(myId, theirId, status)
   }
 
   render() {
-    const solo = navigation.getParam('solo')
+    const solo = this.props.route.params.solo
     const user = this.props.user
     if (user.associatedUsers.includes(solo.uid) && solo.status==='accepted') {return(
       <View>
-        <Text>{solo.first} {solo.last}</Text>
+        <Text>{solo.First} {solo.Last}</Text>
         <Switch
         trackColor={{ false: "#767577", true: "#a79bff" }}
         thumbColor={solo.canTrack ? "#7a68ff" : "#dcd8dc"}
@@ -48,10 +48,10 @@ class SingleContact extends Component {
         </TouchableOpacity>
       </View>
     )}
-    if (user.associatedUsers.inclues(solo.uid) && solo.status==='requested') {
+    if (user.associatedUsers.includes(solo.uid) && solo.status==='requested') {
       return (
         <View>
-        <Text>{solo.first} {solo.last}</Text>
+        <Text>{solo.First} {solo.Last}</Text>
         <Text>{solo.email}</Text>
         <TouchableOpacity>
         <Text onPress={this.sendInvite}>Confirm</Text>
@@ -62,7 +62,7 @@ class SingleContact extends Component {
     if (user.associatedUsers.includes(solo.uid) && solo.status==='pending') {
       return (
         <View>
-          <Text>{solo.first} {solo.last}</Text>
+          <Text>{solo.First} {solo.Last}</Text>
           <Text>{solo.email}</Text>
           <TouchableOpacity>
           <Text>Request pending...</Text>
@@ -76,7 +76,7 @@ class SingleContact extends Component {
     else {
       return (
         <View>
-          <Text>{solo.first} {solo.last}</Text>
+          <Text>{solo.First} {solo.Last}</Text>
           <Text>{solo.email}</Text>
           <TouchableOpacity>
           <Text onPress={this.sendInvite}>Send Invite</Text>
@@ -86,19 +86,16 @@ class SingleContact extends Component {
     }
   }
 }
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     contacts: state.user.contacts
   }
   }
-  const mapDispatchToProps = dispatch => {
-    return {
-      // removeContact: (uid) => dispatch(removeContact(uid)),
-      // changeConsent: (uid, bool) => dispatch(changeConsent(uid, bool)),
+  const mapDispatchToProps = dispatch => ({
+      removeContact: (myId, theirId) => dispatch(removeContact(myId, theirId)),
+      changeConsent: (myId, theirId, value) => dispatch(changeConsent(myId, theirId, value)),
       addContact: (myId, theirId, status) => dispatch(addContact(myId, theirId, status)),
-    }
-  }
+  })
 
-  connect(mapStateToProps, mapDispatchToProps)(SingleContact)
-  export default SingleContact
+  export default connect(mapStateToProps, mapDispatchToProps)(SingleContact)

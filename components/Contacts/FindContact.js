@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import {StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {search, addContact, } from '../../store/user';
@@ -24,17 +24,17 @@ class FindContact extends Component {
         <TextInput
             onChangeText={email => this.setState({email})}
             placeholder="Enter email"
-            placeholderTextColor="#ddddddd"
+            // placeholderTextColor="#ddddddd"
           />
 
           <TouchableOpacity>
-            <Text onPress={this.search}> 🔍 </Text>
+            <Text onPress={this.searchOne}> 🔍 </Text>
           </TouchableOpacity>
       </View>
     )} else {return(
       <View>
         {/* <Image src={this.state.found.imgURL}/> */}
-        <Text>{this.props.found.first} {this.props.found.last}</Text>
+        <Text>{this.props.found.First} {this.props.found.Last}</Text>
         <Text>{this.props.found.email}</Text>
         <TouchableOpacity>
           <Text onPress={this.sendInvite}>Send Invite</Text>
@@ -44,20 +44,18 @@ class FindContact extends Component {
   }
 }
 
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     contacts: state.user.contacts,
     found: state.user.found
   }
   }
-  const mapDispatchToProps = dispatch => {
-    return {
+  const mapDispatchToProps = dispatch => ({
       // removeContact: (uid) => dispatch(removeContact(uid)),
       search: (email) => dispatch(search(email)),
       addContact: (uid) => dispatch(addContact(uid)),
-    }
-  }
+  })
 
-connect(mapStateToProps, mapDispatchToProps)(FindContact)
-export default FindContact
+export default connect(mapStateToProps, mapDispatchToProps)(FindContact)
+
