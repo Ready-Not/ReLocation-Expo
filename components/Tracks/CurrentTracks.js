@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, TouchableOpacityBase } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, TouchableOpacityBase, Alert } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import { connect } from 'react-redux'
 import firebase from '../../config';
@@ -17,19 +17,39 @@ class AllTracks extends React.Component {
   }
 
   render() {
+    if (!this.props.tracks.trackeeTracks) {
+      return (
+        <Text>Loading...</Text>
+      )
+    }
+
     return (
          <View style={styles.container}>
-          {this.props.tracks.trackeeTracks.map((track) => {
+          {
+          this.props.tracks.trackeeTracks.map((track) => {
           return(
             <View style={styles.singleTrackBox}>
             <TouchableOpacity
             onPress={() => this.props.navigation.navigate('SingleTrack')}>
               <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
-              {/* <Text>ETA: {track.ETA.t.seconds}</Text> */}
           </TouchableOpacity>
           <Button title="Cancel track"
-          onPress={(id) => this.props.cancelTrack(track.id)}
-          // onPress={() => console.log(track.id)}
+          onPress={() => Alert.alert(
+            'Cancel Track',
+            'Are you sure you want to delete the track',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              {
+                text: 'Yes',
+                onPress: (id) => this.props.cancelTrack(track.id)
+              },
+            ],
+            { cancelable: false }
+          )}
            />
            </View>
           )}
