@@ -111,7 +111,7 @@ export const getContacts = arr => {
         }
       })
       dispatch({type: GET_CONTACTS, payload: finalContacts})
-    } catch(e) {alert(e)}
+    } catch(e) {console.log(e)}
   }
 }
 

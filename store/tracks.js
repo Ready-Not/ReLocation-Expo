@@ -47,7 +47,8 @@ export const getTrackeeTracksThunk = () => {
         let currentTrack = {
           id: track.id,
           trackee: trackData.trackee,
-          ETA: trackData.ETA
+          ETA: trackData.ETA,
+          confirm: trackData.confirm,
         }
         allMyTracks.push(currentTrack)
       })
@@ -151,7 +152,7 @@ export const setTrackThunk = (newTrack) => {
       // console.log('payload sent from set_track thunk', track)
       dispatch({ type: SET_TRACK, payload: track })
     } catch (e) {
-      alert(e)
+      console.log(e)
     }
   }
 }
