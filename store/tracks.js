@@ -155,7 +155,7 @@ const tracksReducer = (state = initialState, action) => {
       case SET_TRACK:
       // console.log('action payload received to set track reducer', action.payload)
       return (
-          {...state, trackeeTracks: [... state.trackeeTracks, action.payload]}
+          {...state, trackeeTracks: [...state.trackeeTracks, action.payload]}
         )
     default:
       return state

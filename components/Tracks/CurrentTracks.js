@@ -17,7 +17,7 @@ class AllTracks extends React.Component {
   }
 
   render() {
-    if (!this.props.tracks.trackeeTracks) {
+    if (!this.props.trackeeTracks) {
       return (
         <Text>Loading...</Text>
       )
@@ -26,9 +26,9 @@ class AllTracks extends React.Component {
     return (
          <View style={styles.container}>
           {
-          this.props.tracks.trackeeTracks.map((track) => {
+          this.props.trackeeTracks.map((track) => {
           return(
-            <View style={styles.singleTrackBox}>
+            <View key={track.id} style={styles.singleTrackBox}>
             <TouchableOpacity
             onPress={() => this.props.navigation.navigate('SingleTrack')}>
               <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
@@ -90,7 +90,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    tracks: state.tracks
+    trackeeTracks: state.tracks.trackeeTracks
   }
 };
 
