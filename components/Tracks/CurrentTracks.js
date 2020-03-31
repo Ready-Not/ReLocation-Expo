@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, 
 import { Dropdown } from 'react-native-material-dropdown';
 import { connect } from 'react-redux'
 import firebase from '../../config';
-import {getTrackeeTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk} from '../../store/tracks'
+import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk} from '../../store/tracks'
 
 
 class AllTracks extends React.Component {
@@ -12,52 +12,92 @@ class AllTracks extends React.Component {
     super (props);
   }
 
+
+  needConfirmation(track) {
+    console.log('track from needConfirmation', track)
+    if (track.confirm == 'pending') {
+      return (
+        <Button
+        title='Confirm track'
+        onPress={() => this.props.confirmTrack(track.id)}
+        >
+        </Button>
+      )
+    }
+  }
+
   componentDidMount() {
     this.props.getTrackeeTracks();
+    this.props.getTrackerTracks();
   }
 
   render() {
-    if (!this.props.trackeeTracks) {
+    if (!this.props.trackeeTracks || !this.props.trackerTracks) {
       return (
         <Text>Loading...</Text>
       )
     }
 
     return (
-         <View style={styles.container}>
+      <View style={styles.container}>
+          <Text>WHO IS TRACKING ME:</Text>
           {
           this.props.trackeeTracks.map((track) => {
           return(
             <View key={track.id} style={styles.singleTrackBox}>
-            <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('SingleTrack')}>
-              <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
-          </TouchableOpacity>
-          <Button title="Cancel track"
-          onPress={() => Alert.alert(
-            'Cancel Track',
-            'Are you sure you want to delete the track',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              {
-                text: 'Yes',
-                onPress: (id) => this.props.cancelTrack(track.id)
-              },
-            ],
-            { cancelable: false }
-          )}
-           />
+
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('SingleTrack')}>
+                <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
+              </TouchableOpacity>
+
+              <Button title="Cancel track"
+                onPress={() =>
+                  Alert.alert(
+                    'Cancel Track',
+                    'Are you sure you want to delete the track',
+                    [
+                      {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                      },
+                      {
+                      text: 'Yes',
+                      onPress: (id) => this.props.cancelTrack(track.id)
+                      },
+                    ],
+                    { cancelable: false }
+                  )}
+              />
            </View>
           )}
           )}
-         </View>
-    // <Text>{JSON.stringify(this.props.tracks.trackeeTracks)}</Text>
-          )
-           }
+
+        <View style={styles.container}>
+        <Text>I AM TRACKING:</Text>
+        {
+        this.props.trackerTracks.map((track) => {
+
+        return(
+
+          <View key={track.id} style={styles.singleTrackBox}>
+           <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('SingleTrack')}>
+             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
+             <Text>Track status: {track.confirm}</Text>
+            </TouchableOpacity>
+            {this.needConfirmation(track)}
+          </View>
+
+
+
+         )}
+         )}
+        </View>
+
+  </View>)
+  }
 
 }
 
@@ -82,15 +122,17 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => ({
   getTrackeeTracks: () => dispatch(getTrackeeTracksThunk()),
+  getTrackerTracks: () => dispatch(getTrackerTracksThunk()),
   cancelTrack: (id) => dispatch(cancelTrackThunk(id)),
-  confirmTrack: () => dispatch(confirmTrackThunk()),
+  confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
   declineTrack: () => dispatch(declineTrackThunk())
 })
 
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    trackeeTracks: state.tracks.trackeeTracks
+    trackeeTracks: state.tracks.trackeeTracks,
+    trackerTracks: state.tracks.trackerTracks,
   }
 };
 
