@@ -1,6 +1,7 @@
 import firebase, {firestore} from '../config'
 
-const GET_TRACKS = 'GET_TRACKS'
+const GET_TRACKEE_TRACKS = 'GET_TRACKEE_TRACKS'
+const GET_TRACKER_TRACKS = 'GET_TRACKER_TRACKS'
 const CANCEL_TRACK = 'CANCEL_TRACK'
 const CONFIRM_TRACK = 'CONFIRM_TRACK'
 const DECLINE_TRACK = 'DECLINE_TRACK'
@@ -8,11 +9,6 @@ const SET_TRACK = 'SET_TRACK'
 
 
 //TRACKS ACTIONS
-
-const getTracks = tracks => ({
-  type: GET_TRACKS,
-  tracks
-})
 
 const cancelTrack = trackId => ({
   type: CANCEL_TRACK,
@@ -36,19 +32,56 @@ const setTrack = track => ({
 
 //TRACKS THUNKS
 
-export const getTracksThunk = () => {
+export const getTrackeeTracksThunk = () => {
   return async (dispatch) => {
      try {
-      const data = ['a', 'b', 'c'];
-      //find all tracks where uid  === trackee
-      // find all tracks where uid is in the tracker array
-      //combine the two results into a single array
+      const currentUser = await firebase.auth().currentUser
+      let allMyTracks = []
       const allTracks = await firestore
               .collection('tracks')
+              .where('trackee', '==', currentUser.uid)
+              .where('status', '==', 'open')
               .get()
+      allTracks.forEach(track => {
+        let trackData = track.data()
+        let currentTrack = {
+          id: track.id,
+          trackee: trackData.trackee,
+          ETA: trackData.ETA
+        }
+        allMyTracks.push(currentTrack)
+      })
+      console.log('payload sent from get trackee reducer thunk', allMyTracks)
+      dispatch({type: GET_TRACKEE_TRACKS, payload: allMyTracks})
+    } catch (error){
+      // console.log('Failed to get users tracks', error)
+    }
+  }
+}
 
-      console.log(allTracks)
-      dispatch(getTracks(data))
+export const getTrackerTracksThunk = () => {
+  return async (dispatch) => {
+     try {
+       console.log('hitting get tracker tracks thunk')
+      const currentUser = await firebase.auth().currentUser
+      let allMyTracks = []
+      const allTracks = await firestore
+              .collection('tracks')
+              .where('tracker', 'array-contains', currentUser.uid)
+              .where('status', '==', 'open')
+              .get()
+      allTracks.forEach(track => {
+        let trackData = track.data()
+        let currentTrack = {
+          id: track.id,
+          trackee: trackData.trackee,
+          ETA: trackData.ETA,
+          confirm: trackData.confirm,
+        }
+        allMyTracks.push(currentTrack)
+      })
+      console.log('payload sent from get tracker reducer thunk', allMyTracks)
+      dispatch({type: GET_TRACKER_TRACKS, payload: allMyTracks})
     } catch (error){
       console.log('Failed to get users tracks', error)
     }
@@ -58,9 +91,11 @@ export const getTracksThunk = () => {
 export const cancelTrackThunk = (id) => {
   return async (dispatch) => {
     try {
-      // find track where doc.id === id and delete the doc
-      // dispatch ID only, remove from this users' array in reducer
-      dispatch(cancelTrack(trackId))
+      await firestore
+              .collection('tracks')
+              .doc(id)
+              .delete()
+      dispatch({type: CANCEL_TRACK, payload: id})
     }
     catch (error) {
       console.log('Failed to cancel track instance', error)
@@ -69,11 +104,16 @@ export const cancelTrackThunk = (id) => {
 }
 
 export const confirmTrackThunk = (id) => {
+  console.log('track id from confirm thunk', id)
   return async (dispatch) => {
     try {
-      // find track where doc.id === id
-      // update doc to track confirmed to true
-      dispatch(cancelTrack(trackId))
+      await firestore
+              .collection('tracks')
+              .doc(id)
+              .update({
+                confirm: 'approved'
+              })
+      dispatch({type: CONFIRM_TRACK, payload: id})
     }
     catch (error) {
       console.log('Failed to confirm track instance', error)
@@ -108,6 +148,7 @@ export const setTrackThunk = (newTrack) => {
       }
       firestore.collection('tracks')
                 .add(track)
+      // console.log('payload sent from set_track thunk', track)
       dispatch({ type: SET_TRACK, payload: track })
     } catch (e) {
       alert(e)
@@ -115,25 +156,37 @@ export const setTrackThunk = (newTrack) => {
   }
 }
 
-const initialState = []
+const initialState = {}
 
 // TRACKS REDUCER
 
 const tracksReducer = (state = initialState, action) => {
   switch (action.type) {
-    case GET_TRACKS:
-      return action.tracks
+    case GET_TRACKEE_TRACKS:
+      return {...state, trackeeTracks: action.payload}
+      case GET_TRACKER_TRACKS:
+        return {...state, trackerTracks: action.payload}
     case CANCEL_TRACK:
       return (
-        //map through state.tracks and remove track w/ ID===action.trackId
-        //return new tracks array
-        true
+        {
+          ...state,
+          trackeeTracks: state.trackeeTracks.filter(
+            track => track.id !== action.payload
+          )
+        }
       )
     case CONFIRM_TRACK:
+      const newTrackerTracks = state.trackerTracks.map(track => {
+        if (track.id == action.payload) {
+          track.confirm = 'approved'
+        }
+        return track
+      });
       return (
-        //map through state.tracks and find instance with ID===action.trackId. Set canTrack status to true
-        // return new tracks array
-        true
+        {
+          ...state,
+          trackerTracks: newTrackerTracks
+        }
       )
     case DECLINE_TRACK:
       return (
@@ -142,9 +195,9 @@ const tracksReducer = (state = initialState, action) => {
         true
       )
       case SET_TRACK:
-        return (
-          [...state, action.payload]
-
+      // console.log('action payload received to set track reducer', action.payload)
+      return (
+          {...state, trackeeTracks: [...state.trackeeTracks, action.payload]}
         )
     default:
       return state

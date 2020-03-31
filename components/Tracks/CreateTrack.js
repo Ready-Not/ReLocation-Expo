@@ -20,7 +20,7 @@ class TrackForm extends React.Component {
     super (props);
     this.state = {
       currentLocation: null,
-      ETA: new Date ()
+      ETA: new Date (),
     }
 
   }
@@ -102,7 +102,11 @@ class TrackForm extends React.Component {
 
         <Button title="Submit Your Tracking Request" onPress={() => {
           this.props.setTrackThunk(this.state)
-          this.props.navigation.navigate('Profile')}
+          this.props.navigation.navigate('AllTracks')}
+        }
+        />
+      <Button title="See all my tracks" onPress={() => {
+          this.props.navigation.navigate('AllTracks')}
         }
         />
 
