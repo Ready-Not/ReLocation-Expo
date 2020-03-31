@@ -71,7 +71,7 @@ export const search = email => {
 export const createGroup = (name, groupees) => {
   return async dispatch => {
     try {
-      const group = await firestore.collection('groups').doc().set({name: name, usersInGroup: groupees, groupId: it.id})
+      const group = await firestore.collection('groups').doc().set({name: name, usersInGroup: groupees})
       if (group) dispatch({type: CREATE_GROUP, payload: group.data()})
     } catch(e) {alert(e)}
   }
@@ -106,7 +106,7 @@ export const getContacts = arr => {
           email: user.email,
           imgURL: user.imgURL,
           canTrack: arr[i].canTrack,
-          status: arr[i].status,
+          status: (arr[i].status)? arr[i].status : 'none',
           uid: user.uid
         }
       })
@@ -118,6 +118,8 @@ export const getContacts = arr => {
 export const addContact = (myId, theirId, status) => {
   return async dispatch => {
     try {
+      let myNew;
+      let theirNew;
       if (status==='requested') {
         //confirm, so change both to accepted
         const myProf = await firestore.collection('users').doc(myId).get()
@@ -137,19 +139,68 @@ export const addContact = (myId, theirId, status) => {
           }
         })
         const theirNew = await firestore.collection('users').doc(theirId).update(theirWorking)
-        dispatch({type: ADD_CONTACT, payload: [myNew, theirNew]})
+        dispatch(getContacts(myNew.data().associatedUsers))
       }
       if (status==='denied') {
         //denied to pending on mine
+        const myProf = await firestore.collection('users').doc(myId).get()
+        const myWorking = myProf.data()
+        myWorking.associatedUsers.forEach(el => {
+          if (el.userRef===theirId) {
+            el.status='pending'
+          }
+        })
+        const myNew = await firestore.collection('users').doc(myId).update(myWorking)
         //wasdenied to requested on theirs
+        const theirProf = await firestore.collection('users').doc(theirId).get()
+        const theirWorking = theirProf.data()
+        theirWorking.associatedUsers.forEach(el => {
+          if (el.userRef===myId) {
+            el.status='requested'
+          }
+        })
+        const theirNew = await firestore.collection('users').doc(theirId).update(theirWorking)
+        dispatch(getContacts(myNew.data().associatedUsers))
       }
       else {
         //sening request for first time
         const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: "pending"})})
         const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: myId, canTrack: false, status: "requested"})})
-        dispatch({type: ADD_CONTACT, payload: [myNew.data(), theirNew.data()]})
+        dispatch(getContacts(myNew.data().associatedUsers))
       }
     } catch(e){alert(e)}
+  }
+}
+
+export const removeContact = (myId, theirId) => {
+  return async dispatch => {
+    try {
+      const theirRef = await firestore.collection('users').doc(theirId).get()
+      const theirObj = theirRef.data()
+      const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(theirObj)})
+      theirObj.associatedUsers.map(el => {
+        if (el.userRef===myId) {
+          el.status = 'wasDenied'
+        }
+      })
+      dispatch(getContacts(myNew.data().associatedUsers))
+    }catch(e){alert(e)}
+  }
+}
+
+export const ChangeConsent = (myId, theirId, value) => {
+  return async dispatch => {
+    try {
+      const myRef = await firestore.collection('users').doc(myId).get()
+      const myProf = myRef.data()
+      myProf.associatedUsers.forEach(el => {
+        if (el.userRef===theirId) {
+          el.canTrack = value
+        }
+      })
+      const myNew = await firestore.collection('users').doc(myId).update(myProf)
+      dispatch(getContacts(myNew.data().associatedUsers))
+    }catch(e){alert(e)}
   }
 }
 

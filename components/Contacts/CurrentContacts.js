@@ -1,46 +1,46 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux'
-import {StyleSheet, Text, View, TouchableOpacity, ListItem, Button} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import { render } from 'react-dom';
+import { connect } from 'react-redux'
+import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
+import {ListItem} from 'react-native-elements';
 
-class CurrentContacts extends Component {
-
+class DisCurrentContacts extends Component {
   render(){
-    let contacts = this.props.contacts
-    if (contacts) {return(
+    if (!this.props.contacts) {
+      return (
+        <View>
+          <Text>No current contacts</Text>
+          <Button title="Find Contacts"
+              onPress={() => this.props.navigation.navigate('FindContact')}
+            />
+        </View>
+      )
+    }
+    else {
+      let contacts = this.props.contacts
+      return(
       <View>
         {contacts.map(contact => {
           return <ListItem key={contact.uid}
-          leftAvatar={{ source: { uri: contact.imgURL} }}
-          title={`${contact.first} ${contact.last}`}
+          // leftAvatar={{ source: { uri: contact.imgURL} }}
+          title={`${contact.First} ${contact.Last}`}
           subtitle={contact.email}
           bottomDivider
-          onPress={this.props.navigation.navigate('SingleContact', {solo: contact})}
+          onPress={() => this.props.navigation.navigate('SingleContact', {solo: contact})}
           />
         })}
-        <Button title="Find Contacts"
+        <Button title="Find Other Contacts"
             onPress={() => this.props.navigation.navigate('FindContact')}
           />
       </View>
-    )} else {return (
-      <View>
-        <Text>No current contacts</Text>
-        <Button title="Find Contacts"
-            onPress={() => this.props.navigation.navigate('FindContact')}
-          />
-      </View>)}
+    )}
   }
 }
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     contacts: state.user.contacts,
   }
   }
-  const mapDispatchToProps = dispatch => {
-    return{}
-  }
-  connect(mapStateToProps, mapDispatchToProps)(CurrentContacts)
-  export default CurrentContacts
+
+  export const CurrentContacts = connect(mapStateToProps)(DisCurrentContacts)
 

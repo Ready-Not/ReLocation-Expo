@@ -2,11 +2,20 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
+import {ListItem} from 'react-native-elements';
 
 class CurrentGroups extends Component {
   render() {
     const groups = this.props.groups
-    if (groups) {return(
+    if (!groups) {
+      return (
+        <View>
+          <Text>No current groups</Text>
+          <Button title="Create a Group"
+              onPress={() => this.props.navigation.navigate('CreateGroup')}
+            />
+        </View>)}
+    else {return(
       <View>
         {groups.map(group => {
           return <ListItem key={group.uid}
@@ -14,23 +23,17 @@ class CurrentGroups extends Component {
           title={group.name}
           subtitle={`${group.usersInGroup.length} People`}
           bottomDivider
-          onPress={this.props.navigation.navigate('SingleGroup'), {group: group}}
+          onPress={() => this.props.navigation.navigate('SingleGroup', {group: group})}
           />
         })}
         <Button title="Create a Group"
             onPress={() => this.props.navigation.navigate('CreateGroup')}
           />
       </View>
-    )} else {return (
-      <View>
-        <Text>No current groups</Text>
-        <Button title="Create a Group"
-            onPress={() => this.props.navigation.navigate('CreateGroup')}
-          />
-      </View>)}
+    )}
   }
 }
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     contacts: state.user.contacts,
@@ -38,5 +41,4 @@ const mapStateToProps = () => {
   }
 }
 
-  connect(mapStateToProps)(CurrentGroups)
-  export default CurrentGroups
+  export default connect(mapStateToProps)(CurrentGroups)
