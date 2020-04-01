@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import firebase from '../config';
 import registerForPushNotificationsAsync from '../utils/notifications'
 import { CONTACTS } from 'expo-permissions';
-import {getContacts, getGroups} from '../store/user'
+import {getContacts, getGroups, getUser} from '../store/user'
 
 class Profile extends React.Component {
     handleSignout = () => {
@@ -14,6 +14,8 @@ class Profile extends React.Component {
 
     componentDidMount () {
       registerForPushNotificationsAsync()
+    //   this.props.getContacts(this.props.user.associatedUsers)
+    //   this.props.getGroups(this.props.user.uid)
     }
 
     render() {
@@ -90,7 +92,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         getContacts: (arr) => dispatch(getContacts(arr)),
-        getGroups: (uid) => dispatch(getGroups(uid))
+        getGroups: (uid) => dispatch(getGroups(uid)),
+        getUser: (uid) => dispatch(getUser(uid)),
     }
 }
 
