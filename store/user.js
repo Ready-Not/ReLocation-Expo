@@ -61,7 +61,6 @@ export const getUser = uid => {
 export const search = email => {
   return async dispatch => {
     try {
-      console.log('email received by thunk', email, typeof email)
       const userArr = await firestore.collection('users').where('email', '==', email).get()
       if(!userArr.empty) {
         let foundUser
@@ -70,6 +69,12 @@ export const search = email => {
       }
       else dispatch({type: SEARCH, payload: {error: 'No user by that name exists'}})
     } catch(e) {console.log(e)}
+  }
+}
+
+export const removeFound = () =>  {
+  return dispatch => {
+  dispatch({type: SEARCH, payload: null})
   }
 }
 
