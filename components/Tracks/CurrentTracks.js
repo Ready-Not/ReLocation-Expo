@@ -14,14 +14,20 @@ class AllTracks extends React.Component {
 
 
   needConfirmation(track) {
-    console.log('track from needConfirmation', track)
     if (track.confirm == 'pending') {
       return (
+        <View>
         <Button
         title='Confirm track'
         onPress={() => this.props.confirmTrack(track.id)}
         >
         </Button>
+        <Button
+        title='Decline track'
+        onPress={() => this.props.declineTrack(track.id)}
+        >
+        </Button>
+        </View>
       )
     }
   }
@@ -51,6 +57,7 @@ class AllTracks extends React.Component {
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
                 <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
+              {this.needConfirmation(track)}
 
               <Button title="Cancel track"
                 onPress={() =>
@@ -88,7 +95,6 @@ class AllTracks extends React.Component {
              <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
-            {this.needConfirmation(track)}
           </View>
 
 
@@ -126,7 +132,7 @@ const mapDispatchToProps = dispatch => ({
   getTrackerTracks: () => dispatch(getTrackerTracksThunk()),
   cancelTrack: (id) => dispatch(cancelTrackThunk(id)),
   confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
-  declineTrack: () => dispatch(declineTrackThunk())
+  declineTrack: (id) => dispatch(declineTrackThunk(id))
 })
 
 const mapStateToProps = (state) => {

@@ -112,7 +112,7 @@ export const confirmTrackThunk = (id) => {
               .collection('tracks')
               .doc(id)
               .update({
-                confirm: 'approved'
+                confirm: 'confirmed'
               })
       dispatch({type: CONFIRM_TRACK, payload: id})
     }
@@ -123,12 +123,16 @@ export const confirmTrackThunk = (id) => {
 }
 
 export const declineTrackThunk = (id) => {
+  console.log('id from thunk', id)
   return async (dispatch) => {
     try {
-      // find track where doc.id === id
-      // update doc to track confirmed to false
-      // delete instance? for this user?
-      dispatch(declineTrack(trackId))
+      await firestore
+              .collection('tracks')
+              .doc(id)
+              .update({
+                confirm: 'declined'
+              })
+      dispatch({type: DECLINE_TRACK, payload: id})
     }
     catch (error) {
       console.log('Failed to declined track instance', error)
@@ -139,6 +143,8 @@ export const declineTrackThunk = (id) => {
 export const setTrackThunk = (newTrack) => {
   return async (dispatch, getState) => {
     try {
+      //if trackee is current user 'confirm' should be 'confirmed'
+      //if trackee is not a current user 'confirm' should be 'pending'
       const currentUser = await firebase.auth().currentUser
       const track = {
         trackee: currentUser.uid,
@@ -177,25 +183,34 @@ const tracksReducer = (state = initialState, action) => {
         }
       )
     case CONFIRM_TRACK:
-      const newTrackerTracks = state.trackerTracks.map(track => {
+      console.log('payload from confirm track', action.payload)
+      let newTrackeeTracks = state.trackeeTracks.map(track => {
         if (track.id == action.payload) {
-          track.confirm = 'approved'
+          track.confirm = 'confirmed'
         }
         return track
       });
       return (
         {
           ...state,
-          trackerTracks: newTrackerTracks
+          trackeeTracks: newTrackeeTracks
         }
       )
     case DECLINE_TRACK:
+      console.log('pyload from decline track', action.payload)
+      newTrackeeTracks = state.trackeeTracks.map(track => {
+        if (track.id == action.payload) {
+          track.confirm = 'declined'
+        }
+        return track
+      });
       return (
-        //map through state.tracks and find instance with ID===action.trackId. Set canTrack status to false?
-        // return new tracks array
-        true
+        {
+          ...state,
+          trackeeTracks: newTrackeeTracks
+        }
       )
-      case SET_TRACK:
+    case SET_TRACK:
       // console.log('action payload received to set track reducer', action.payload)
       return (
           {...state, trackeeTracks: [...state.trackeeTracks, action.payload]}
