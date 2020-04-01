@@ -46,6 +46,28 @@ class AllTracks extends React.Component {
         </Button>
         </View>
       )
+    } else if (track.confirm == 'confirmed') {
+      return (
+        <Button title="Cancel track"
+                onPress={() =>
+                  Alert.alert(
+                    'Cancel Track',
+                    'Are you sure you want to delete the track',
+                    [
+                      {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                      },
+                      {
+                      text: 'Yes',
+                      onPress: (id) => this.props.cancelTrack(track.id)
+                      },
+                    ],
+                    { cancelable: false }
+                  )}
+              />
+      )
     }
   }
 
@@ -75,26 +97,6 @@ class AllTracks extends React.Component {
                 <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
               {this.needConfirmation(track)}
-
-              <Button title="Cancel track"
-                onPress={() =>
-                  Alert.alert(
-                    'Cancel Track',
-                    'Are you sure you want to delete the track',
-                    [
-                      {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                      },
-                      {
-                      text: 'Yes',
-                      onPress: (id) => this.props.cancelTrack(track.id)
-                      },
-                    ],
-                    { cancelable: false }
-                  )}
-              />
            </View>
           )}
           )}
