@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import {StyleSheet, Text, View, TouchableOpacity, TextInput} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {search, addContact, } from '../../store/user';
+import {search, addContact, removeFound} from '../../store/user';
 
 class FindContact extends Component {
-  constructor (props) {
-    super(props)
+  constructor () {
+    super()
     this.state={}
   }
 
@@ -28,15 +28,24 @@ class FindContact extends Component {
             <Text onPress={() => this.props.search(this.state.email)}> 🔍 </Text>
           </TouchableOpacity>
       </View>
+    )} else if (this.props.found.error) {return(
+      <View>
+      {/* <Image src={this.state.found.imgURL}/> */}
+      <Text>{this.props.found.error}</Text>
+      <TouchableOpacity>
+        <Text onPress={this.sendInvite}>Send Invite</Text>
+      </TouchableOpacity>
+    </View>
     )} else {return(
       <View>
         {/* <Image src={this.state.found.imgURL}/> */}
         <Text>{this.props.found.First} {this.props.found.Last}</Text>
         <Text>{this.props.found.email}</Text>
-        <Text>{this.props.found.error}</Text>
         <TouchableOpacity>
-          <Text onPress={this.sendInvite}>Send Invite</Text>
-        </TouchableOpacity>
+        <Text onPress={ () => {
+          this.props.removeFound()
+          this.props.navigation.navigate('CurrentContacts')}}>Go back to all current contacts</Text>
+      </TouchableOpacity>
       </View>
     )}
   }
@@ -53,6 +62,7 @@ const mapStateToProps = state => {
       // removeContact: (uid) => dispatch(removeContact(uid)),
       search: (email) => dispatch(search(email)),
       addContact: (uid) => dispatch(addContact(uid)),
+      removeFound: () => dispatch(removeFound())
   })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FindContact)
