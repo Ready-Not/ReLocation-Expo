@@ -24,7 +24,24 @@ class AllTracks extends React.Component {
         </Button>
         <Button
         title='Decline track'
-        onPress={() => this.props.declineTrack(track.id)}
+        // onPress={() => this.props.declineTrack(track.id)}
+        onPress={() =>
+          Alert.alert(
+            'Decline Track',
+            'Are you sure you want to decline the track',
+            [
+              {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.declineTrack(track.id)
+              },
+            ],
+            { cancelable: false }
+          )}
         >
         </Button>
         </View>
