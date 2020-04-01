@@ -92,7 +92,7 @@ class AllTracks extends React.Component {
             <View key={track.id} style={styles.singleTrackBox}>
 
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('SingleTrack')}>
+                onPress={() => this.props.navigation.navigate('SingleTrack', {track})}>
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
                 <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
@@ -110,7 +110,7 @@ class AllTracks extends React.Component {
 
           <View key={track.id} style={styles.singleTrackBox}>
            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('SingleTrack')}>
+              onPress={() => this.props.navigation.navigate('SingleTrack', {track})}>
              <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   container: {
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'flex-start'
   },
   singleTrackBox: {
