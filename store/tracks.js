@@ -139,11 +139,14 @@ export const declineTrackThunk = (id) => {
 export const setTrackThunk = (newTrack) => {
   return async (dispatch, getState) => {
     try {
+      console.log(newTrack.currentLocation);
+      console.log(newTrack.finalLocation);
       const currentUser = await firebase.auth().currentUser
       const track = {
         trackee: currentUser.uid,
         ETA: newTrack.ETA,
         currentLocation: newTrack.currentLocation,
+        finalLocation: newTrack.finalLocation,
         confirm: 'pending',
         status: 'open'
       }

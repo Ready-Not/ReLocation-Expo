@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
@@ -8,9 +8,11 @@ import firebase from '../../config';
 import Map from '../Map'
 import { setTrackThunk } from '../../store/tracks'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Touchable from 'react-native-platform-touchable';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+
 
 
 class TrackForm extends React.Component {
@@ -19,10 +21,14 @@ class TrackForm extends React.Component {
   constructor (props) {
     super (props);
     this.state = {
+      targetAddress: '',
       currentLocation: null,
       ETA: new Date (),
+      inProgress: false,
+      finalLocation: null,
+      error: null
     }
-
+    this.handleAddress = this.handleAddress.bind(this)
   }
 
   //get list off users' associated users from store to create data array for dropdown list. Include user so they can select themself
@@ -48,14 +54,89 @@ class TrackForm extends React.Component {
   });
   };
 
+  _attemptGeocodeAsync = async () => {
+
+    this.setState({ inProgress: true, error: null });
+    try {
+    let location = await Location.geocodeAsync(this.state.targetAddress);
+    this.setState({ finalLocation: {
+      latitude: location[0].latitude,
+      longitude: location[0].longitude
+    } });
+    } catch (e) {
+    this.setState({ error: e.message });
+    } finally {
+    this.setState({ inProgress: false });
+    }
+    };
+
+
+  _maybeRenderResult = () => {
+    let { targetAddress, finalLocation } = this.state;
+    let text = typeof targetAddress === 'string'
+      ? targetAddress
+      : JSON.stringify(targetAddress);
+
+    if (this.state.inProgress) {
+      return <ActivityIndicator style={{ marginTop: 10 }} />;
+    } else if (finalLocation) {
+      return (
+        <Text style={styles.resultText}>
+          {text} resolves to {JSON.stringify(finalLocation)}
+        </Text>
+      );
+    } else if (this.state.error) {
+      return (
+        <Text style={styles.errorResultText}>
+          {text} cannot resolve: {JSON.stringify(this.state.error)}
+        </Text>
+      );
+    }
+  };
+
+
+  handleAddress = event => {
+    console.log(event.nativeEvent.text)
+    this.setState({
+      targetAddress: event.nativeEvent.text
+    })
+  }
+
   componentDidMount () {
     this._getLocationAsync()
   }
 
   render() {
+
     let data = [{value: 'Martha'}, {value: 'Jen'}, {value: 'Julia'}, {value: 'Luis'}, {value: 'James'}, {value: 'Cyndi'}]
+
     return (
        <View style={styles.container}>
+         <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Select a location</Text>
+        </View>
+
+
+        <TextInput
+        value={this.state.targetAddress}
+        onChange={this.handleAddress}
+        placeholder='Journey Destination'
+        style={styles.inputBox}
+        ></TextInput>
+
+        <View style={styles.separator} />
+
+        <View style={styles.actionContainer}>
+          <Button
+              onPress={this._attemptGeocodeAsync}
+              title="Set Destination"
+              disabled={typeof this.state.targetAddress !== 'string'}
+              style={styles.button}
+            />
+        </View>
+
+        <View style={styles.separator} />
+
        {/* <Dropdown
         label="trackee"
         style={styles.inputBox}
@@ -77,7 +158,7 @@ class TrackForm extends React.Component {
         style={styles.inputBox}
         ></TextInput> */}
 
-        <DateTimePicker
+        {/* <DateTimePicker
           value={this.state.ETA}
           style={{ width: 200 }}
           mode={'time'}
@@ -86,12 +167,14 @@ class TrackForm extends React.Component {
           onChange={(event, selectedTime) => this.setState({ETA: selectedTime})}
         />
 
+        <View style={styles.separator} />
+
         <DateTimePicker
           value={this.state.ETA}
           style={{ width: 200 }}
           display="default"
           onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
-        />
+        /> */}
 
         {/* <MapView style={styles.mapStyle} /> */}
 
@@ -113,6 +196,7 @@ class TrackForm extends React.Component {
         }
         />
 
+        {this._maybeRenderResult()}
       </View>
     )
   }
@@ -157,6 +241,42 @@ const styles = StyleSheet.create({
   mapStyle: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  headerContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    marginHorizontal: 20,
+    marginBottom: 0,
+    marginTop: 20,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  examplesContainer: {
+    paddingTop: 15,
+    paddingBottom: 5,
+    paddingHorizontal: 20,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#eee',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  resultText: {
+    padding: 20,
+  },
+  errorResultText: {
+    padding: 20,
+    color: 'red',
   },
 })
 
