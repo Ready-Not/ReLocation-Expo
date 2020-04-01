@@ -5,14 +5,11 @@ import {Actions} from 'react-native-router-flux';
 import {search, addContact, } from '../../store/user';
 
 class FindContact extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state={}
   }
 
-  searchOne (email) {
-    this.props.search(email)
-  }
   sendInvite () {
     //figure out a way to send that user an invite to connect, if accepted, put in database using found
   }
@@ -24,11 +21,11 @@ class FindContact extends Component {
         <TextInput
             onChangeText={email => this.setState({email})}
             placeholder="Enter email"
-            // placeholderTextColor="#ddddddd"
+            placeholderTextColor="#ddd"
           />
 
           <TouchableOpacity>
-            <Text onPress={this.searchOne}> 🔍 </Text>
+            <Text onPress={() => this.props.search(this.state.email)}> 🔍 </Text>
           </TouchableOpacity>
       </View>
     )} else {return(
@@ -36,6 +33,7 @@ class FindContact extends Component {
         {/* <Image src={this.state.found.imgURL}/> */}
         <Text>{this.props.found.First} {this.props.found.Last}</Text>
         <Text>{this.props.found.email}</Text>
+        <Text>{this.props.found.error}</Text>
         <TouchableOpacity>
           <Text onPress={this.sendInvite}>Send Invite</Text>
         </TouchableOpacity>
