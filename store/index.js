@@ -20,12 +20,6 @@ const user = (state = {}, action) => {
       return {...state, groups: action.payload}
     case SEARCH:
       return {...state, found: action.payload}
-    case CREATE_GROUP:
-      return {...state, groups: [...this.state.groups, action.payload]}
-    case LEAVE_GROUP:
-      return {...state, groups: this.state.groups.filter(el => {
-        if (el.name!==action.payload.name) {return el}
-      })}
     default:
       return state
   }

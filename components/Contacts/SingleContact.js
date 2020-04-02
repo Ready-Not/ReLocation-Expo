@@ -32,6 +32,7 @@ class SingleContact extends Component {
     const myId = this.props.user.uid
     const status = this.props.route.params.solo.status
     this.props.addContact(myId, theirId, status)
+    this.props.navigation.navigate("Current Contacts")
   }
 
   render() {
