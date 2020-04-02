@@ -37,13 +37,13 @@ class Profile extends React.Component {
                 <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
                 <Button title="Set-Up a track?"
-                onPress={() => this.props.navigation.navigate('TrackForm')}
+                onPress={() => this.props.navigation.navigate('Start Trip')}
                  />
                  <Button title="My Groups"
-                onPress={() => this.props.navigation.navigate('CurrentGroups')}
+                onPress={() => this.props.navigation.navigate('Current Groups')}
                  />
                  <Button title="My Contacts"
-                onPress={() => this.props.navigation.navigate('CurrentContacts')}
+                onPress={() => this.props.navigation.navigate('Current Contacts')}
                  />
             </View>
         )

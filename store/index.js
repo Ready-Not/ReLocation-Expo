@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { LOGIN, SIGNUP, UPDATE_EMAIL, UPDATE_PASSWORD, GET_CONTACTS, GET_GROUPS, SEARCH, CREATE_GROUP, LEAVE_GROUP } from './user'
+import { LOGIN, SIGNUP, UPDATE_EMAIL, UPDATE_PASSWORD, GET_CONTACTS, GET_GROUPS, SEARCH, CREATE_GROUP, LEAVE_GROUP, ADD_CONTACT, } from './user'
 import { ActionConst } from 'react-native-router-flux'
 import tracksReducer from './tracks'
 

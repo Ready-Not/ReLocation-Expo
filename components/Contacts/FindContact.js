@@ -11,6 +11,16 @@ class FindContact extends Component {
   }
 
   sendInvite () {
+    let status
+    if (!this.props.found.status) status=''
+    if (this.props.found.status==='requested') status='pending'
+    if (this.props.found.status==='pending') status='requested'
+    if (this.props.found.status==='denied') status='wasDenied'
+    if (this.props.found.status==='wasDenied') status='denied'
+    console.log('sendInvite', status)
+    if (status!=='wasDenied') {
+      this.props.addContact(this.props.user.uid, this.props.found.uid, status)
+    }
     //figure out a way to send that user an invite to connect, if accepted, put in database using found
   }
 
@@ -28,22 +38,22 @@ class FindContact extends Component {
           <TouchableOpacity>
             <Text
             style={{padding: 30}}
-            onPress={() => this.props.search(this.state.email)}> 🔍 </Text>
+            onPress={() => this.props.search(this.state.email, this.props.user.uid)}> 🔍 </Text>
           </TouchableOpacity>
       </View>
     )} else if (this.props.found.error) {return(
       <View style={styles.container}>
       {/* <Image src={this.state.found.imgURL}/> */}
       <Text style={styles.textBox}>{this.props.found.error}</Text>
-      <TouchableOpacity>
+      {/* <TouchableOpacity>
         <Text onPress={this.sendInvite}>TBD: Send Invite</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity style={styles.button}>
         <Text
           style={styles.buttonText}
           onPress={ () => {
           this.props.removeFound()
-          this.props.navigation.navigate('CurrentContacts')}}>Go back to AllContacts</Text>
+          this.props.navigation.navigate('Current Contacts')}}>Go back to AllContacts</Text>
       </TouchableOpacity>
     </View>
     )} else {return(
@@ -51,13 +61,13 @@ class FindContact extends Component {
         {/* <Image src={this.state.found.imgURL}/> */}
         <Text style={styles.textBox}>{this.props.found.First} {this.props.found.Last}</Text>
         <Text style={styles.textBox}>{this.props.found.email}</Text>
-        <Text style={styles.textBox}>TBD: status/relationship to me, actions</Text>
+        <Text style={styles.textBox} onPress={() => this.sendInvite()}>{this.props.found.status || 'Send Invite'}</Text>
         <TouchableOpacity style={styles.button}>
         <Text
           style={styles.buttonText}
           onPress={ () => {
           this.props.removeFound()
-          this.props.navigation.navigate('CurrentContacts')}}>Go back to AllContacts</Text>
+          this.props.navigation.navigate('Current Contacts')}}>Go back to AllContacts</Text>
       </TouchableOpacity>
       </View>
     )}
@@ -114,8 +124,8 @@ const mapStateToProps = state => {
   }
   const mapDispatchToProps = dispatch => ({
       // removeContact: (uid) => dispatch(removeContact(uid)),
-      search: (email) => dispatch(search(email)),
-      addContact: (uid) => dispatch(addContact(uid)),
+      search: (email, uid) => dispatch(search(email, uid)),
+      addContact: (myId, theirId, status) => dispatch(addContact(myId, theirId, status)),
       removeFound: () => dispatch(removeFound())
   })
 

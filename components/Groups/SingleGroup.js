@@ -1,22 +1,19 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
-import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Button, ActivityIndicator} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {leaveGroup} from '../../store/user'
 import {ListItem} from 'react-native-elements';
 
 class SingleGroup extends Component {
-  constructor() {
-    super()
-  }
-
-  leaveGroup () {
+  leave () {
     this.props.leaveGroup(this.props.group.groupId, this.props.user.uid)
     this.props.navigation.goBack()
   }
 
   render() {
     const group = this.props.route.params.group
+    if (!this.props.user) return (<ActivityIndicator/>)
     return (
       <View>
         <Text>{group.name}</Text>
@@ -27,23 +24,22 @@ class SingleGroup extends Component {
           title={`${user.First} ${user.Last}`}
           subtitle={user.email}
           bottomDivider
-          onPress={() => this.props.navigation.navigate('SingleContact', {solo: user})}
           />
         })}
         <Text>Actively Tracking:</Text>
-        {group.tracks.map(track => {
+        {group.tracks ? group.tracks.map(track => {
           return <ListItem key={track.uid}
           title={`Tracking ${track.trackee}`}
           subtitle={`Tracking ends at ${track.time}`}/>
-        })}
+        }) : <Text>No Active Tracks</Text>}
         <TouchableOpacity>
-          <Text onPress={this.leaveGroup}>Leave Group</Text>
+          <Text onPress={() => this.leave()}>Leave Group</Text>
           </TouchableOpacity>
       </View>
     )
   }
 }
-const mapStateToProps = () => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     contacts: state.user.contacts,

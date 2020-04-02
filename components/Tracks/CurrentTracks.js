@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, TouchableOpacityBase, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, TouchableOpacityBase, Alert, ActivityIndicator } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import { connect } from 'react-redux'
 import firebase from '../../config';
@@ -79,7 +79,7 @@ class AllTracks extends React.Component {
   render() {
     if (!this.props.trackeeTracks || !this.props.trackerTracks) {
       return (
-        <Text>Loading...</Text>
+        <ActivityIndicator />
       )
     }
 
@@ -92,7 +92,9 @@ class AllTracks extends React.Component {
             <View key={track.id} style={styles.singleTrackBox}>
 
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('SingleTrack', {track})}>
+
+                onPress={() => this.props.navigation.navigate('Trip', {track})}>
+
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
                 <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
@@ -110,7 +112,9 @@ class AllTracks extends React.Component {
 
           <View key={track.id} style={styles.singleTrackBox}>
            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('SingleTrack', {track})}>
+
+              onPress={() => this.props.navigation.navigate('Trip', {track})}>
+
              <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
