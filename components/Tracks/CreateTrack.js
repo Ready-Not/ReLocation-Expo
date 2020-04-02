@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux'
 import firebase from '../../config';
 import Map from '../Map'
 import { setTrackThunk } from '../../store/tracks'
+import { getContacts } from '../../store/user'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Touchable from 'react-native-platform-touchable';
 
@@ -26,7 +27,8 @@ class TrackForm extends React.Component {
       ETA: new Date (),
       inProgress: false,
       finalLocation: null,
-      error: null
+      error: null,
+      trackee: ''
     }
     this.handleAddress = this.handleAddress.bind(this)
   }
@@ -96,7 +98,6 @@ class TrackForm extends React.Component {
 
 
   handleAddress = event => {
-    console.log(event.nativeEvent.text)
     this.setState({
       targetAddress: event.nativeEvent.text
     })
@@ -107,15 +108,17 @@ class TrackForm extends React.Component {
   }
 
   render() {
-
-    let data = [{value: 'Martha'}, {value: 'Jen'}, {value: 'Julia'}, {value: 'Luis'}, {value: 'James'}, {value: 'Cyndi'}]
+    let data = this.props.contacts.map(friend => (
+      {value: `${friend.First} ${friend.Last}`,
+        uid: friend.uid
+      }))
+    data.push({value: 'Me', uid: this.props.user.uid})
 
     return (
        <View style={styles.container}>
          <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Select a location</Text>
+          <Text style={styles.headerText}>Select location</Text>
         </View>
-
 
         <TextInput
         value={this.state.targetAddress}
@@ -137,26 +140,18 @@ class TrackForm extends React.Component {
 
         <View style={styles.separator} />
 
-       {/* <Dropdown
-        label="trackee"
-        style={styles.inputBox}
-        data={data}
-        itemCount={3}
-        //value={this.state.trackee}
-        >
-        </Dropdown> */}
+        <Dropdown
+          style={styles.inputBox}
+          value={this.state.trackee}
+          onChangeText={(trackee) => (
+            console.log(trackee),
+            this.setState({ trackee })
+            )}
+          label='name'
+          data={data}
+        />
 
-        {/* <TextInput
-       // value={this.state.location}
-        placeholder='location'
-        style={styles.inputBox}
-        ></TextInput> */}
 
-        {/* <TextInput
-        //value={this.state.eta}
-        placeholder='eta'
-        style={styles.inputBox}
-        ></TextInput> */}
 
         {/* <DateTimePicker
           value={this.state.ETA}
@@ -187,7 +182,7 @@ class TrackForm extends React.Component {
         ></TextInput> */}
 
         <Button title="Submit Your Tracking Request" onPress={() => {
-          this.props.setTrackThunk(this.state)
+          this.props.setTrack(this.state)
           this.props.navigation.navigate('AllTracks')}
         }
         />
@@ -197,6 +192,7 @@ class TrackForm extends React.Component {
         />
 
         {this._maybeRenderResult()}
+      <Text>{this.state.trackee}</Text>
       </View>
     )
   }
@@ -211,7 +207,7 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start'
   },
   inputBox: {
-      width: '85%',
+      width: '100%',
       margin: 10,
       padding: 15,
       fontSize: 16,
@@ -280,27 +276,18 @@ const styles = StyleSheet.create({
   },
 })
 
-// functions in the store to make calls to the firestore.
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = dispatch => ({
+  getContacts: () => dispatch(getContacts()),
+   setTrack: (data) => dispatch(setTrackThunk(data))
+})
 
-  //getFriends Thunk
-  // createTrack Thunk
-  //createLocation Thunk
-  return bindActionCreators({ setTrackThunk }, dispatch)
-
-}
-
-const mapStateToProps = state => {
-//  user
-//  user's associated users
-}
+const mapStateToProps = state => ({
+  user: state.user,
+  contacts: state.user.contacts,
+})
 
 
-export default connect(
-  // mapStateToProps,
-  null,
-  mapDispatchToProps
-)(TrackForm)
+export default connect(mapStateToProps, mapDispatchToProps)(TrackForm)
 
 

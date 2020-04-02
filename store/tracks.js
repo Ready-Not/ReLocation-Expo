@@ -63,7 +63,6 @@ export const getTrackeeTracksThunk = () => {
 export const getTrackerTracksThunk = () => {
   return async (dispatch) => {
      try {
-       console.log('hitting get tracker tracks thunk')
       const currentUser = await firebase.auth().currentUser
       let allMyTracks = []
       const allTracks = await firestore
@@ -81,7 +80,6 @@ export const getTrackerTracksThunk = () => {
         }
         allMyTracks.push(currentTrack)
       })
-      console.log('payload sent from get tracker reducer thunk', allMyTracks)
       dispatch({type: GET_TRACKER_TRACKS, payload: allMyTracks})
     } catch (error){
       console.log('Failed to get users tracks', error)
@@ -143,13 +141,8 @@ export const declineTrackThunk = (id) => {
 export const setTrackThunk = (newTrack) => {
   return async (dispatch, getState) => {
     try {
-<<<<<<< HEAD
-      console.log(newTrack.currentLocation);
-      console.log(newTrack.finalLocation);
-=======
       //if trackee is current user 'confirm' should be 'confirmed'
       //if trackee is not a current user 'confirm' should be 'pending'
->>>>>>> master
       const currentUser = await firebase.auth().currentUser
       const track = {
         trackee: currentUser.uid,
