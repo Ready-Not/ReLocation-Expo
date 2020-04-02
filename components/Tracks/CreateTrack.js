@@ -143,10 +143,7 @@ class TrackForm extends React.Component {
         <Dropdown
           style={styles.inputBox}
           value={this.state.trackee}
-          onChangeText={(trackee) => (
-            console.log(trackee),
-            this.setState({ trackee })
-            )}
+          onChangeText={(trackee) => (this.setState({ trackee }))}
           label='name'
           data={data}
         />
