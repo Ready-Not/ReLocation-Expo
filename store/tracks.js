@@ -141,20 +141,21 @@ export const declineTrackThunk = (id) => {
 export const setTrackThunk = (newTrack) => {
   return async (dispatch, getState) => {
     try {
-      //if trackee is current user 'confirm' should be 'confirmed'
-      //if trackee is not a current user 'confirm' should be 'pending'
+      let confirm = 'pending'
       const currentUser = await firebase.auth().currentUser
+      if(currentUser.uid === newTrack.trackee) confirm = 'confirmed'
+
       const track = {
-        trackee: currentUser.uid,
+        trackee: newTrack.trackee,
+        trackers: newTrack.trackers,
         ETA: newTrack.ETA,
         currentLocation: newTrack.currentLocation,
         finalLocation: newTrack.finalLocation,
-        confirm: 'pending',
+        confirm,
         status: 'open'
       }
       firestore.collection('tracks')
                 .add(track)
-      // console.log('payload sent from set_track thunk', track)
       dispatch({ type: SET_TRACK, payload: track })
     } catch (e) {
       console.log(e)

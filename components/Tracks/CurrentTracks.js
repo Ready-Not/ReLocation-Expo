@@ -114,8 +114,8 @@ class AllTracks extends React.Component {
            <TouchableOpacity
 
               onPress={() => this.props.navigation.navigate('Trip', {track})}>
-
-             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
+{/*
+             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text> */}
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
           </View>

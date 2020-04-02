@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, ScrollView } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
@@ -18,7 +18,6 @@ import * as Permissions from 'expo-permissions';
 
 class TrackForm extends React.Component {
 
-  // state to locally store track info . . . not sure if this is necessary
   constructor (props) {
     super (props);
     this.state = {
@@ -28,19 +27,11 @@ class TrackForm extends React.Component {
       inProgress: false,
       finalLocation: null,
       error: null,
-      trackee: ''
+      trackee: '',
+      trackers: []
     }
     this.handleAddress = this.handleAddress.bind(this)
   }
-
-  //get list off users' associated users from store to create data array for dropdown list. Include user so they can select themself
-  //get list of users' associated locations from store to create data array for dropdown list. Include option to search for location on map
-
-  //create trackers array based on form input
-
-  //function to verify if trackers have consent
-
-  //function to submit track instance
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -96,6 +87,21 @@ class TrackForm extends React.Component {
     }
   };
 
+  _onPress = item => {
+    this.setState({
+      trackee: item.uid
+    });
+  }
+
+  addTracker = item => {
+    let trackers = this.state.trackers
+      if(!trackers.includes(item.uid)){
+      trackers.push(item.uid)
+      this.setState({
+        trackers
+      })
+      }
+  }
 
   handleAddress = event => {
     this.setState({
@@ -115,7 +121,7 @@ class TrackForm extends React.Component {
     data.push({value: 'Me', uid: this.props.user.uid})
 
     return (
-       <View style={styles.container}>
+        <View style={styles.container}>
          <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Select location</Text>
         </View>
@@ -126,8 +132,6 @@ class TrackForm extends React.Component {
         placeholder='Journey Destination'
         style={styles.inputBox}
         ></TextInput>
-
-        <View style={styles.separator} />
 
         <View style={styles.actionContainer}>
           <Button
@@ -140,17 +144,29 @@ class TrackForm extends React.Component {
 
         <View style={styles.separator} />
 
-        <Dropdown
-          style={styles.inputBox}
-          value={this.state.trackee}
-          onChangeText={(trackee) => (this.setState({ trackee }))}
-          label='name'
-          data={data}
-        />
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Who are we safeguarding today?</Text>
+        </View>
 
+        <FlatList
+        data={data}
+        renderItem={({item, index, separators}) => (
+          <TouchableHighlight
+            key={item.uid}
+            onPress={() => this._onPress(item)}
+            onShowUnderlay={separators.highlight}
+            onHideUnderlay={separators.unhighlight}>
+            <View style={{backgroundColor: 'white'}}>
+              <Text>{item.value}</Text>
+            </View>
+          </TouchableHighlight>
+        )}
+        keyExtractor={item => item.uid}
+      />
 
+      <View style={styles.separator} />
 
-        {/* <DateTimePicker
+        <DateTimePicker
           value={this.state.ETA}
           style={{ width: 200 }}
           mode={'time'}
@@ -159,37 +175,46 @@ class TrackForm extends React.Component {
           onChange={(event, selectedTime) => this.setState({ETA: selectedTime})}
         />
 
-        <View style={styles.separator} />
-
         <DateTimePicker
           value={this.state.ETA}
           style={{ width: 200 }}
           display="default"
           onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
-        /> */}
+        />
 
-        {/* <MapView style={styles.mapStyle} /> */}
+        <View style={styles.separator} />
 
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Who's Checking In'?</Text>
+        </View>
 
-
-        {/* <TextInput
-       // value={this.state.tracker}
-        placeholder='trackers'
-        style={styles.inputBox}
-        ></TextInput> */}
+        <FlatList
+        data={data}
+        renderItem={({item, index, separators}) => (
+          <TouchableHighlight
+            key={item.uid}
+            onPress={() => this.addTracker(item)}
+            onShowUnderlay={separators.highlight}
+            onHideUnderlay={separators.unhighlight}>
+            <View style={{backgroundColor: 'white'}}>
+              <Text>{item.value}</Text>
+            </View>
+          </TouchableHighlight>
+        )}
+        keyExtractor={item => item.uid}
+      />
 
         <Button title="Submit Your Tracking Request" onPress={() => {
           this.props.setTrack(this.state)
-          this.props.navigation.navigate('AllTracks')}
+          this.props.navigation.navigate('All Trips')}
         }
         />
       <Button title="See all my tracks" onPress={() => {
-          this.props.navigation.navigate('AllTracks')}
+          this.props.navigation.navigate('All Trips')}
         }
         />
 
-        {this._maybeRenderResult()}
-      <Text>{this.state.trackee}</Text>
+        {this.state.trackers}
       </View>
     )
   }
