@@ -17,10 +17,11 @@ class SingleTrack extends Component {
   }
 
   render() {
-    // const {track} = this.props
+    const {track} = this.props.route.params
     return (
       <View>
         <Text>Single Track Instance!</Text>
+    <Text>{JSON.stringify(track)}</Text>
         {/* <Text>Tracking {track.trackee.first} {track.trackee.last}</Text>
         <Text>Trackers:</Text>
         {track.trackers.map(tracker => {

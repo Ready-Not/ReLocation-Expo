@@ -14,14 +14,59 @@ class AllTracks extends React.Component {
 
 
   needConfirmation(track) {
-    console.log('track from needConfirmation', track)
     if (track.confirm == 'pending') {
       return (
+        <View>
         <Button
         title='Confirm track'
         onPress={() => this.props.confirmTrack(track.id)}
         >
         </Button>
+        <Button
+        title='Decline track'
+        // onPress={() => this.props.declineTrack(track.id)}
+        onPress={() =>
+          Alert.alert(
+            'Decline Track',
+            'Are you sure you want to decline the track',
+            [
+              {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.declineTrack(track.id)
+              },
+            ],
+            { cancelable: false }
+          )}
+        >
+        </Button>
+        </View>
+      )
+    } else if (track.confirm == 'confirmed') {
+      return (
+        <Button title="Cancel track"
+                onPress={() =>
+                  Alert.alert(
+                    'Cancel Track',
+                    'Are you sure you want to delete the track',
+                    [
+                      {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                      },
+                      {
+                      text: 'Yes',
+                      onPress: (id) => this.props.cancelTrack(track.id)
+                      },
+                    ],
+                    { cancelable: false }
+                  )}
+              />
       )
     }
   }
@@ -47,30 +92,13 @@ class AllTracks extends React.Component {
             <View key={track.id} style={styles.singleTrackBox}>
 
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Trip')}>
+
+                onPress={() => this.props.navigation.navigate('Trip', {track})}>
+
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
                 <Text>Track status: {track.confirm}</Text>
               </TouchableOpacity>
-
-              <Button title="Cancel track"
-                onPress={() =>
-                  Alert.alert(
-                    'Cancel Track',
-                    'Are you sure you want to delete the track',
-                    [
-                      {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                      },
-                      {
-                      text: 'Yes',
-                      onPress: (id) => this.props.cancelTrack(track.id)
-                      },
-                    ],
-                    { cancelable: false }
-                  )}
-              />
+              {this.needConfirmation(track)}
            </View>
           )}
           )}
@@ -84,11 +112,12 @@ class AllTracks extends React.Component {
 
           <View key={track.id} style={styles.singleTrackBox}>
            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Trip')}>
+
+              onPress={() => this.props.navigation.navigate('Trip', {track})}>
+
              <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
-            {this.needConfirmation(track)}
           </View>
 
 
@@ -106,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'flex-start'
   },
   singleTrackBox: {
@@ -126,7 +155,7 @@ const mapDispatchToProps = dispatch => ({
   getTrackerTracks: () => dispatch(getTrackerTracksThunk()),
   cancelTrack: (id) => dispatch(cancelTrackThunk(id)),
   confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
-  declineTrack: () => dispatch(declineTrackThunk())
+  declineTrack: (id) => dispatch(declineTrackThunk(id))
 })
 
 const mapStateToProps = (state) => {
