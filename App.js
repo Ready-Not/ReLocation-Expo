@@ -51,15 +51,15 @@ function LogIn() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Map" component={MyMaps} />
-      <Stack.Screen name="TrackForm" component={TrackForm} />
-      <Stack.Screen name="AllTracks" component={AllTracks} />
-      <Stack.Screen name="SingleTrack" component={SingleTrack} />
-      <Stack.Screen name="CurrentContacts" component={CurrentContacts} />
-      <Stack.Screen name="SingleContact" component={SingleContact} />
-      <Stack.Screen name="FindContact" component={FindContact} />
-      <Stack.Screen name="CurrentGroups" component={CurrentGroups} />
-      <Stack.Screen name="SingleGroup" component={SingleGroup} />
-      <Stack.Screen name="CreateGroup" component={CreateGroup} />
+      <Stack.Screen name="Start Trip" component={TrackForm} />
+      <Stack.Screen name="All Trips" component={AllTracks} />
+      <Stack.Screen name="Trip" component={SingleTrack} />
+      <Stack.Screen name="Current Contacts" component={CurrentContacts} />
+      <Stack.Screen name="Contact" component={SingleContact} />
+      <Stack.Screen name="Find Contact" component={FindContact} />
+      <Stack.Screen name="Current Groups" component={CurrentGroups} />
+      <Stack.Screen name="Group" component={SingleGroup} />
+      <Stack.Screen name="Create Group" component={CreateGroup} />
     </Stack.Navigator>
   )
 }

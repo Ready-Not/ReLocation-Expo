@@ -10,26 +10,52 @@ class DisCurrentContacts extends Component {
         <View>
           <Text>No current contacts</Text>
           <Button title="Find Contacts"
-              onPress={() => this.props.navigation.navigate('FindContact')}
+              onPress={() => this.props.navigation.navigate('Find Contact')}
             />
         </View>
       )
     }
     else {
-      let contacts = this.props.contacts
+      const contacts = this.props.contacts.filter(el => {if (el.status==='accepted') return el})
+      const pending = this.props.contacts.filter(el => {if (el.status==='pending') return el})
+      const requested = this.props.contacts.filter(el => {if (el.status==='requested') return el})
       return(
       <View>
+        {contacts.length ? <View><Text>Your Contacts</Text>
         {contacts.map(contact => {
           return <ListItem key={contact.uid}
-          // leftAvatar={{ source: { uri: contact.imgURL} }}
+          leftAvatar={{ source: { uri: contact.imgURL} }}
+          rightElement={'>'}
           title={`${contact.First} ${contact.Last}`}
           subtitle={contact.email}
           bottomDivider
-          onPress={() => this.props.navigation.navigate('SingleContact', {solo: contact})}
+          onPress={() => this.props.navigation.navigate('Contact', {solo: contact})}
           />
-        })}
-        <Button title="Find Other Contacts"
-            onPress={() => this.props.navigation.navigate('FindContact')}
+        })}</View> : <Text> </Text>}
+        {pending.length ? <View><Text>Pending Contacts</Text>
+        {pending.map(contact => {
+          return <ListItem key={contact.uid}
+          leftAvatar={{ source: { uri: contact.imgURL} }}
+          rightElement={'>'}
+          title={`${contact.First} ${contact.Last}`}
+          subtitle={contact.email}
+          bottomDivider
+          onPress={() => this.props.navigation.navigate('Contact', {solo: contact})}
+          />
+        })}</View> : <Text></Text>}
+        {requested.length ? <View><Text>Requested Contacts</Text>
+        {requested.map(contact => {
+          return <ListItem key={contact.uid}
+          leftAvatar={{ source: { uri: contact.imgURL} }}
+          rightElement={'>'}
+          title={`${contact.First} ${contact.Last}`}
+          subtitle={contact.email}
+          bottomDivider
+          onPress={() => this.props.navigation.navigate('Contact', {solo: contact})}
+          />
+        })}</View> : <Text></Text>}
+        <Button title="Add More Contacts"
+            onPress={() => this.props.navigation.navigate('Find Contact')}
           />
       </View>
     )}
