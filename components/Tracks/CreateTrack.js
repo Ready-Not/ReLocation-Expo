@@ -114,22 +114,25 @@ class TrackForm extends React.Component {
   }
 
   render() {
-    let data = this.props.contacts.map(friend => (
+    let data = []
+    if(this.props.contacts){
+     data = this.props.contacts.map(friend => (
       {value: `${friend.First} ${friend.Last}`,
         uid: friend.uid
       }))
+    }
     data.push({value: 'Me', uid: this.props.user.uid})
 
     return (
         <View style={styles.container}>
-         <View style={styles.headerContainer}>
+         {/* <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Select location</Text>
-        </View>
+        </View> */}
 
         <TextInput
         value={this.state.targetAddress}
         onChange={this.handleAddress}
-        placeholder='Journey Destination'
+        placeholder='Enter Trip Destination'
         style={styles.inputBox}
         ></TextInput>
 
@@ -142,10 +145,10 @@ class TrackForm extends React.Component {
             />
         </View>
 
-        <View style={styles.separator} />
+        {/* <View style={styles.separator} /> */}
 
         <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Who are we safeguarding today?</Text>
+          <Text>Who are we safeguarding today?</Text>
         </View>
 
         <FlatList
@@ -182,10 +185,10 @@ class TrackForm extends React.Component {
           onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
         />
 
-        <View style={styles.separator} />
+        {/* <View style={styles.separator} /> */}
 
         <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Who's Checking In'?</Text>
+          <Text>Who's Checking In'?</Text>
         </View>
 
         <FlatList
