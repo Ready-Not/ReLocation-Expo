@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {createGroup} from '../../store/user';
-import {ListItem} from 'react-native-elements';
+import {ListItem, rightElement} from 'react-native-elements';
 
 class CreateGroup extends Component {
   constructor(){
@@ -25,26 +25,17 @@ class CreateGroup extends Component {
 
   handleSubmit (uid) {
     const users = [...this.state.groupees, uid]
-    this.props.createGroup(this.state.name, this.state.groupees)
-    this.props.navigation.goBack()
-    //send all the users notifications that they've been added to a new group with name ___ (and maybe who added them)
+    this.props.createGroup(this.state.name, users, this.props.user.uid)
+    this.props.navigation.navigate("Current Groups")
   }
   addToGroup (item) {
     if (!this.state.groupees.includes(item.uid)) {
       let newGroup = [...this.state.groupees, item.uid]
       this.setState({groupees: newGroup})
     }
-    console.log('from addtoGroup', this.state.groupees)
   }
 
   renderItem = ({item}) => {
-    // return (
-    //   <View>
-    //     <Text>{item.First} {item.Last}</Text>
-    //     <Button title="Add" onPress={this.addToGroup(item)} />
-    //   </View>
-    // )
-
     return (<ListItem
           leftAvatar={{ source: { uri: item.imgURL} }}
           rightElement={<Button title="Add" onPress={() => this.addToGroup(item)} />}
@@ -52,7 +43,6 @@ class CreateGroup extends Component {
           subtitle={item.email}
           bottomDivider
           />)
-
   }
 
   searchContacts = (value) => {
@@ -111,7 +101,7 @@ return {
 }
 }
 const mapDispatchToProps = dispatch => ({
-  createGroup: (name, groupees) => dispatch(createGroup(name, groupees)),
+  createGroup: (name, groupees, myId) => dispatch(createGroup(name, groupees, myId)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroup)

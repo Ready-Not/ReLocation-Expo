@@ -86,11 +86,11 @@ export const removeFound = () =>  {
   }
 }
 
-export const createGroup = (name, groupees) => {
+export const createGroup = (name, groupees, myId) => {
   return async dispatch => {
     try {
       const group = await firestore.collection('groups').doc().set({name: name, usersInGroup: groupees})
-      if (group) dispatch({type: CREATE_GROUP, payload: group.data()})
+      dispatch(getGroups(myId))
     } catch(e) {alert(e)}
   }
 }
@@ -102,10 +102,12 @@ export const leaveGroup = (groupId, uid) => {
       const updated = toModify.usersInGroup.filter(el => {
         if (el !== uid) return el
       })
-      const newGroup = await firestore.collection('groups').doc(groupId).set(updated)
+      toModify.usersInGroup=updated
+      await firestore.collection('groups').doc(groupId).set(toModify)
+      const newGroup = firestore.collection('groups').doc(groupId).get()
       if (newGroup) {
-        if (!newGroup.usersInGroup.inclues(uid)) {alert('You have left the group')}
-        dispatch({type: LEAVE_GROUP, payload: newGroup.data()})
+        if (!newGroup.data().usersInGroup.inclues(uid)) {alert('You have left the group')}
+        dispatch(getGroups(uid))
       }
     } catch(e) {alert(e)}
   }
@@ -238,11 +240,14 @@ export const getGroups = uid => {
       let allGroupsArr = []
       const allGroups = await firestore.collection('groups').get()
       allGroups.forEach(group => {
-      allGroupsArr.push(group.data())
+        let groupStuff=group.data()
+        groupStuff.id = group.id
+        allGroupsArr.push(groupStuff)
       })
       const filtered = allGroupsArr.filter(group => {
         if (group.usersInGroup.includes(uid)) return group
       })
+      console.log('fromgetgroups', filtered)
       filtered.map(async el => {
         let allUsers = []
         const contacts = Promise.all(el.usersInGroup.map( el => {

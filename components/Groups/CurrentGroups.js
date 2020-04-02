@@ -18,7 +18,7 @@ class CurrentGroups extends Component {
     else {return(
       <View>
         {groups.map(group => {
-          return <ListItem key={group.uid}
+          return <ListItem key={group.id}
           leftAvatar={{ source: { uri: group.icon} }}
           rightElement={'>'}
           title={group.name}

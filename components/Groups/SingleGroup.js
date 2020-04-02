@@ -7,8 +7,8 @@ import {ListItem} from 'react-native-elements';
 
 class SingleGroup extends Component {
   leave () {
-    this.props.leaveGroup(this.props.group.groupId, this.props.user.uid)
-    this.props.navigation.goBack()
+    this.props.leaveGroup(this.props.route.params.group.id, this.props.user.uid)
+    this.props.navigation.navigate("Current Groups")
   }
 
   render() {

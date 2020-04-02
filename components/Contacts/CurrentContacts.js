@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
-import {ListItem} from 'react-native-elements';
+import {ListItem, rightElement} from 'react-native-elements';
 
 class DisCurrentContacts extends Component {
   render(){
