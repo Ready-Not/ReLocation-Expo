@@ -12,7 +12,7 @@ class CurrentGroups extends Component {
         <View>
           <Text>No current groups</Text>
           <Button title="Create a Group"
-              onPress={() => this.props.navigation.navigate('CreateGroup')}
+              onPress={() => this.props.navigation.navigate('Create Group')}
             />
         </View>)}
     else {return(
@@ -20,14 +20,15 @@ class CurrentGroups extends Component {
         {groups.map(group => {
           return <ListItem key={group.uid}
           leftAvatar={{ source: { uri: group.icon} }}
+          rightElement={'>'}
           title={group.name}
           subtitle={`${group.usersInGroup.length} People`}
           bottomDivider
-          onPress={() => this.props.navigation.navigate('SingleGroup', {group: group})}
+          onPress={() => this.props.navigation.navigate('Group', {group: group})}
           />
         })}
         <Button title="Create a Group"
-            onPress={() => this.props.navigation.navigate('CreateGroup')}
+            onPress={() => this.props.navigation.navigate('Create Group')}
           />
       </View>
     )}

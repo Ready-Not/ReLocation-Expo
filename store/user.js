@@ -58,16 +58,25 @@ export const getUser = uid => {
   }
 }
 
-export const search = email => {
+export const search = (email, uid) => {
   return async dispatch => {
     try {
       const userArr = await firestore.collection('users').where('email', '==', email).get()
       if(!userArr.empty) {
         let foundUser
-        userArr.forEach(user => { foundUser = user.data() })
+        userArr.forEach(user => {
+          foundUser = user.data()
+          if (foundUser.associatedUsers) foundUser.associatedUsers.forEach(el => {
+            if (el.userRef === uid) {
+              foundUser.status = el.status
+            }
+          })
+        })
         dispatch({type: SEARCH, payload: foundUser})
       }
-      else dispatch({type: SEARCH, payload: {error: 'No user by that name exists'}})
+      else {
+        dispatch({type: SEARCH, payload: {error: 'No user by that name exists'}})
+      }
     } catch(e) {console.log(e)}
   }
 }
@@ -95,7 +104,10 @@ export const leaveGroup = (groupId, uid) => {
         if (el !== uid) return el
       })
       const newGroup = await firestore.collection('groups').doc(groupId).set(updated)
-      if (newGroup) dispatch({type: LEAVE_GROUP, payload: newGroup.data()})
+      if (newGroup) {
+        if (!newGroup.usersInGroup.inclues(uid)) {alert('You have left the group')}
+        dispatch({type: LEAVE_GROUP, payload: newGroup.data()})
+      }
     } catch(e) {alert(e)}
   }
 }
@@ -149,7 +161,9 @@ export const addContact = (myId, theirId, status) => {
           }
         })
         const theirNew = await firestore.collection('users').doc(theirId).update(theirWorking)
-        dispatch(getContacts(myNew.data().associatedUsers))
+
+        const myUpdated = await firestore.collection('users').doc(myId).get()
+        dispatch(getContacts(myUpdated.data().associatedUsers))
       }
       if (status==='denied') {
         //denied to pending on mine
@@ -174,8 +188,9 @@ export const addContact = (myId, theirId, status) => {
       }
       else {
         //sening request for first time
-        const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: "pending"})})
+        const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: 'pending'})})
         const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: myId, canTrack: false, status: "requested"})})
+        console.log(myNew.data().associatedUsers, theirNew.data().associatedUsers)
         dispatch(getContacts(myNew.data().associatedUsers))
       }
     } catch(e){alert(e)}
@@ -185,20 +200,23 @@ export const addContact = (myId, theirId, status) => {
 export const removeContact = (myId, theirId) => {
   return async dispatch => {
     try {
-      const theirRef = await firestore.collection('users').doc(theirId).get()
-      const theirObj = theirRef.data()
+      const myRef = await firestore.collection('users').doc(myId).get()
+      const theirObj = myRef.data().associatedUsers.filter(el => {
+        if (el.userRef===theirId) return el
+      })[0]
       const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(theirObj)})
       theirObj.associatedUsers.map(el => {
         if (el.userRef===myId) {
           el.status = 'wasDenied'
         }
       })
-      dispatch(getContacts(myNew.data().associatedUsers))
-    }catch(e){alert(e)}
+      const myUpdated = await firestore.collection('users').doc(myId).get()
+      dispatch(getContacts(myUpdated.data().associatedUsers))
+    }catch(e){console.log(e)}
   }
 }
 
-export const ChangeConsent = (myId, theirId, value) => {
+export const changeConsent = (myId, theirId, value) => {
   return async dispatch => {
     try {
       const myRef = await firestore.collection('users').doc(myId).get()
@@ -209,7 +227,8 @@ export const ChangeConsent = (myId, theirId, value) => {
         }
       })
       const myNew = await firestore.collection('users').doc(myId).update(myProf)
-      dispatch(getContacts(myNew.data().associatedUsers))
+      const myUpdated = await firestore.collection('users').doc(myId).get()
+      dispatch(getContacts(myUpdated.data().associatedUsers))
     }catch(e){alert(e)}
   }
 }
@@ -225,7 +244,24 @@ export const getGroups = uid => {
       const filtered = allGroupsArr.filter(group => {
         if (group.usersInGroup.includes(uid)) return group
       })
-      console.log(filtered)
+      filtered.map(async el => {
+        let allUsers = []
+        const contacts = Promise.all(el.usersInGroup.map( el => {
+          const user = firestore.collection('users').doc(el).get()
+          return user
+        }))
+        ;(await contacts).forEach(el => allUsers.push(el.data()))
+        const finalContacts = allUsers.map((user, i) => {
+          return {
+            First: user.First,
+            Last: user.Last,
+            email: user.email,
+            imgURL: user.imgURL,
+            uid: user.uid
+          }
+        })
+        el.usersInGroup = finalContacts
+      })
       dispatch({type: GET_GROUPS, payload: filtered})
     } catch(e) {alert(e)}
   }

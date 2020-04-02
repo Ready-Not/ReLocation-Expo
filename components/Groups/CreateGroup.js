@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {createGroup} from '../../store/user';
+import {ListItem} from 'react-native-elements';
 
 class CreateGroup extends Component {
   constructor(){
@@ -13,14 +14,16 @@ class CreateGroup extends Component {
     }
   }
   componentDidMount () {
+    let acceptedContacts = this.props.contacts.filter(el => {
+      if (el.status==='accepted') return el
+    })
     this.setState(
-      {contacts: this.props.contacts,
-        inMemoryContacts: this.props.contacts}
+      {contacts: acceptedContacts,
+        inMemoryContacts: acceptedContacts}
     )
   }
 
   handleSubmit (uid) {
-    console.log('from createGroup', uid)
     const users = [...this.state.groupees, uid]
     this.props.createGroup(this.state.name, this.state.groupees)
     this.props.navigation.goBack()
@@ -31,16 +34,26 @@ class CreateGroup extends Component {
       let newGroup = [...this.state.groupees, item.uid]
       this.setState({groupees: newGroup})
     }
-    console.log(this.state.groupees)
+    console.log('from addtoGroup', this.state.groupees)
   }
 
   renderItem = ({item}) => {
-    return (
-      <View>
-        <Text>{item.First} {item.Last}</Text>
-        <Button title="Add" onPress={this.addToGroup(item)} />
-      </View>
-    )}
+    // return (
+    //   <View>
+    //     <Text>{item.First} {item.Last}</Text>
+    //     <Button title="Add" onPress={this.addToGroup(item)} />
+    //   </View>
+    // )
+
+    return (<ListItem
+          leftAvatar={{ source: { uri: item.imgURL} }}
+          rightElement={<Button title="Add" onPress={() => this.addToGroup(item)} />}
+          title={`${item.First} ${item.Last}`}
+          subtitle={item.email}
+          bottomDivider
+          />)
+
+  }
 
   searchContacts = (value) => {
     const filteredContacts = this.state.inMemoryContacts.filter(contact => {
@@ -59,7 +72,7 @@ class CreateGroup extends Component {
       return <View>
         <Text>Add Contacts to form a group!</Text>
         <Button title="Find Contacts"
-            onPress={() => this.props.navigation.navigate('FindContact')}
+            onPress={() => this.props.navigation.navigate('Find Contact')}
           />
       </View>
     } else {
