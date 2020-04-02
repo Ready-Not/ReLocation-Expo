@@ -33,7 +33,6 @@ export const login = () => {
   return async (dispatch, getState) => {
       try {
           const { email, password } = getState().user
-          console.log('from LOGIN THUNK', email, password)
           const response = await firebase.auth().signInWithEmailAndPassword(email, password)
           dispatch(getUser(response.user.uid))
       } catch (e) {
