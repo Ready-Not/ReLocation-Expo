@@ -141,8 +141,6 @@ export const getContacts = arr => {
 export const addContact = (myId, theirId, status) => {
   return async dispatch => {
     try {
-      let myNew;
-      let theirNew;
       if (status==='requested') {
         //confirm, so change both to accepted
         const myProf = await firestore.collection('users').doc(myId).get()
@@ -215,13 +213,13 @@ export const removeContact = (myId, theirId) => {
         if (el.userRef===theirId) return el
       })[0]
       const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(theirObj)})
+
       const theirRef = await firestore.collection('users').doc(theirId).get()
-      const myObj = theirRef.data().associatedUsers.map(el => {
-        if (el.userRef===myId) {
-          el.status = 'wasDenied'
-        }
+      const myObj = theirRef.data().associatedUsers.filter(el => {
+        if (el.userRef===myId) return el
       })[0]
       const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(myObj)})
+
       const myUpdated = await firestore.collection('users').doc(myId).get()
       dispatch(getContacts(myUpdated.data().associatedUsers))
     }catch(e){console.log(e)}
@@ -258,7 +256,6 @@ export const getGroups = uid => {
       const filtered = allGroupsArr.filter(group => {
         if (group.usersInGroup.includes(uid)) return group
       })
-      console.log('fromgetgroups', filtered)
       filtered.map(async el => {
         let allUsers = []
         const contacts = Promise.all(el.usersInGroup.map( el => {
