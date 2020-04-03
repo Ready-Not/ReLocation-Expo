@@ -186,14 +186,23 @@ export const addContact = (myId, theirId, status) => {
           }
         })
         const theirNew = await firestore.collection('users').doc(theirId).update(theirWorking)
-        dispatch(getContacts(myNew.data().associatedUsers))
+        const myUpdated = await firestore.collection('users').doc(myId).get()
+        dispatch(getContacts(myUpdated.data().associatedUsers))
       }
       else {
-        //sening request for first time
-        const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: 'pending'})})
-        const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: myId, canTrack: false, status: "requested"})})
-        console.log(myNew.data().associatedUsers, theirNew.data().associatedUsers)
-        dispatch(getContacts(myNew.data().associatedUsers))
+        //sending request for first time
+        const myRef = await firestore.collection('users').doc(myId).get()
+        const myArr = myRef.data().associatedUsers.filter(el => {if (el.userRef===theirId) return el})
+        const theirRef = await firestore.collection('users').doc(theirId).get()
+        const theirArr = theirRef.data().associatedUsers.filter(el => {if (el.userRef===myId) return el})
+
+        if (!myArr.length && !theirArr.length) {
+          const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: theirId, canTrack: false, status: 'pending'})})
+          const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayUnion({userRef: myId, canTrack: false, status: "requested"})})
+
+          const myUpdated = await firestore.collection('users').doc(myId).get()
+          dispatch(getContacts(myUpdated.data().associatedUsers))
+        }
       }
     } catch(e){alert(e)}
   }
