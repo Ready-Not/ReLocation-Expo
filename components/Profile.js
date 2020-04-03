@@ -5,6 +5,7 @@ import firebase from '../config';
 import registerForPushNotificationsAsync from '../utils/notifications'
 import { CONTACTS } from 'expo-permissions';
 import {getContacts, getGroups, getUser} from '../store/user'
+import {Avatar} from 'react-native-elements'
 
 class Profile extends React.Component {
     handleSignout = () => {
@@ -27,6 +28,11 @@ class Profile extends React.Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.textBox}>My Profile:</Text>
+                <Avatar
+                  size="large"
+                  rounded
+                  source={{ uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                />
                 <Text style={styles.textBox}>First name: {this.props.user.First}</Text>
                 <Text style={styles.textBox}>Last name: {this.props.user.Last}</Text>
                 <Text style={styles.textBox}>Email: {this.props.user.email}</Text>
@@ -39,22 +45,22 @@ class Profile extends React.Component {
 
                 <TouchableOpacity style={styles.button}
                 onPress={() => this.props.navigation.navigate('Start Trip')}>
-                <Text style={styles.buttonText}>"Set-Up a track?"</Text>
+                <Text style={styles.buttonText}>Start a Trip</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button}
                 onPress={() => this.props.navigation.navigate('All Trips')}>
-                <Text style={styles.buttonText}>"All my trips?"</Text>
+                <Text style={styles.buttonText}>My Trips</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button}
                 onPress={() => this.props.navigation.navigate('Current Groups')}>
-                 <Text style={styles.buttonText}>"My Groups"</Text>
+                 <Text style={styles.buttonText}>My Groups</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button}
                 onPress={() => this.props.navigation.navigate('Current Contacts')}>
-                 <Text style={styles.buttonText}>"My Contacts"</Text>
+                 <Text style={styles.buttonText}>My Contacts</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button} onPress={this.handleSignout}>

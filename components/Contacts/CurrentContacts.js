@@ -2,8 +2,15 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native'
 import {ListItem, rightElement} from 'react-native-elements';
+import {getUser} from '../../store/user'
 
 class DisCurrentContacts extends Component {
+
+  componentDidMount () {
+    this.props.getUser(this.props.user.uid)
+    console.log('cdm', this.props.user.associatedUsers)
+  }
+
   render(){
     if (!this.props.contacts) {
       return (
@@ -36,7 +43,7 @@ class DisCurrentContacts extends Component {
         {pending.map(contact => {
           return <ListItem key={contact.uid}
           leftAvatar={{ source: { uri: contact.imgURL} }}
-          rightElement={'>'}
+          rightElement={<Text>></Text>}
           title={`${contact.First} ${contact.Last}`}
           subtitle={contact.email}
           bottomDivider
@@ -67,6 +74,11 @@ const mapStateToProps = state => {
     contacts: state.user.contacts,
   }
   }
+const mapDispatchToProps = dispatch => {
+  return {
+    getUser: (uid) => dispatch(getUser(uid))
+  }
+}
 
-  export const CurrentContacts = connect(mapStateToProps)(DisCurrentContacts)
+  export const CurrentContacts = connect(mapStateToProps, mapDispatchToProps)(DisCurrentContacts)
 
