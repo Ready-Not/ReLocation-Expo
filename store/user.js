@@ -215,11 +215,13 @@ export const removeContact = (myId, theirId) => {
         if (el.userRef===theirId) return el
       })[0]
       const myNew = await firestore.collection('users').doc(myId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(theirObj)})
-      theirObj.associatedUsers.map(el => {
+      const theirRef = await firestore.collection('users').doc(theirId).get()
+      const myObj = theirRef.data().associatedUsers.map(el => {
         if (el.userRef===myId) {
           el.status = 'wasDenied'
         }
-      })
+      })[0]
+      const theirNew = await firestore.collection('users').doc(theirId).update({associatedUsers: firebase.firestore.FieldValue.arrayRemove(myObj)})
       const myUpdated = await firestore.collection('users').doc(myId).get()
       dispatch(getContacts(myUpdated.data().associatedUsers))
     }catch(e){console.log(e)}
