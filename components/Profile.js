@@ -14,8 +14,11 @@ class Profile extends React.Component {
 
     componentDidMount () {
       registerForPushNotificationsAsync()
-    //   this.props.getContacts(this.props.user.associatedUsers)
-    //   this.props.getGroups(this.props.user.uid)
+      this.setState({
+          First: this.props.user.First,
+          Last: this.props.user.Last,
+          email: this.props.user.email,
+      })
     }
 
     render() {
