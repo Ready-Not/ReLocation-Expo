@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {StyleSheet, Text, View, TouchableOpacity, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {ListItem} from 'react-native-elements';
+import {ListItem, rightElement} from 'react-native-elements';
 
 class CurrentGroups extends Component {
   render() {
