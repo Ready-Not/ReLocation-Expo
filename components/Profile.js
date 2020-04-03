@@ -29,22 +29,35 @@ class Profile extends React.Component {
                 <Text style={styles.textBox}>Email: {this.props.user.email}</Text>
 
                 {/* This is a temporary code just to make sure location APIs are connected and working */}
-                <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('Map')}>
+                {/* <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('Map')}>
                 <Text style={styles.buttonText}>Test location</Text>
+                </TouchableOpacity> */}
+
+
+                <TouchableOpacity style={styles.button}
+                onPress={() => this.props.navigation.navigate('Start Trip')}>
+                <Text style={styles.buttonText}>"Set-Up a track?"</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}
+                onPress={() => this.props.navigation.navigate('All Trips')}>
+                <Text style={styles.buttonText}>"All my trips?"</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}
+                onPress={() => this.props.navigation.navigate('Current Groups')}>
+                 <Text style={styles.buttonText}>"My Groups"</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}
+                onPress={() => this.props.navigation.navigate('Current Contacts')}>
+                 <Text style={styles.buttonText}>"My Contacts"</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button} onPress={this.handleSignout}>
                 <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
-                <Button title="Set-Up a track?"
-                onPress={() => this.props.navigation.navigate('Start Trip')}
-                 />
-                 <Button title="My Groups"
-                onPress={() => this.props.navigation.navigate('Current Groups')}
-                 />
-                 <Button title="My Contacts"
-                onPress={() => this.props.navigation.navigate('Current Contacts')}
-                 />
+
             </View>
         )
     }
@@ -65,8 +78,8 @@ const styles = StyleSheet.create({
       textAlign: 'center'
   },
   button: {
-      marginTop: 30,
-      marginBottom: 20,
+      marginTop: 20,
+      marginBottom: 10,
       paddingVertical: 5,
       alignItems: 'center',
       backgroundColor: '#F6820D',
