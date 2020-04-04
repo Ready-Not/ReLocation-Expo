@@ -256,7 +256,6 @@ export const getGroups = uid => {
       const filtered = allGroupsArr.filter(group => {
         if (group.usersInGroup.includes(uid)) return group
       })
-      console.log('fromgetgroups', filtered)
       filtered.map(async el => {
         let allUsers = []
         const contacts = Promise.all(el.usersInGroup.map( el => {

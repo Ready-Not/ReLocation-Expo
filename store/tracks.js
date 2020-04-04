@@ -6,9 +6,21 @@ const CANCEL_TRACK = 'CANCEL_TRACK'
 const CONFIRM_TRACK = 'CONFIRM_TRACK'
 const DECLINE_TRACK = 'DECLINE_TRACK'
 const SET_TRACK = 'SET_TRACK'
+const GOT_TRACKEE = 'GET_TRACKEE'
+const GOT_TRACKERS = 'GET_TRACKERS'
 
 
 //TRACKS ACTIONS
+
+const gotTrackee = trackee => ({
+  type: GOT_TRACKEE,
+  trackee
+})
+
+const gotTrackers = trackers => ({
+  type: GOT_TRACKERS,
+  trackers
+})
 
 const cancelTrack = trackId => ({
   type: CANCEL_TRACK,
@@ -32,6 +44,40 @@ const setTrack = track => ({
 
 //TRACKS THUNKS
 
+export const getTrackee = uid => {
+  return async (dispatch, getState) => {
+      try {
+          const user = await firestore
+              .collection('users')
+              .doc(uid)
+              .get()
+          const names = {first: user.data().First, last: user.data().Last}
+          dispatch(gotTrackee(names))
+      } catch (e) {
+          alert(e)
+      }
+  }
+}
+
+export const getTrackers = uids => {
+  return async (dispatch, getState) => {
+      try {
+      let trArray = [];
+       uids.forEach(async function(uid){
+          const user = await firestore
+              .collection('users')
+              .doc(uid)
+              .get()
+          let tr = {first: user.data().First, last: user.data().Last}
+          trArray.push(tr);
+        })
+          dispatch(gotTrackers(trArray))
+      } catch (e) {
+          alert(e)
+      }
+  }
+}
+
 export const getTrackeeTracksThunk = () => {
   return async (dispatch) => {
      try {
@@ -47,12 +93,13 @@ export const getTrackeeTracksThunk = () => {
         let currentTrack = {
           id: track.id,
           trackee: trackData.trackee,
+          trackers: trackData.trackers,
+          destination: trackData.finalLocation,
           ETA: trackData.ETA,
           confirm: trackData.confirm,
         }
         allMyTracks.push(currentTrack)
       })
-      console.log('payload sent from get trackee reducer thunk', allMyTracks)
       dispatch({type: GET_TRACKEE_TRACKS, payload: allMyTracks})
     } catch (error){
       // console.log('Failed to get users tracks', error)
@@ -169,6 +216,11 @@ const initialState = {}
 
 const tracksReducer = (state = initialState, action) => {
   switch (action.type) {
+    case GOT_TRACKEE:
+      return {...state, trackee: action.trackee}
+    case GOT_TRACKERS:
+      console.log(action.trackers)
+      return {...state, trackers: action.trackers}
     case GET_TRACKEE_TRACKS:
       return {...state, trackeeTracks: action.payload}
       case GET_TRACKER_TRACKS:
