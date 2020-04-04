@@ -1,6 +1,7 @@
 import React, {Component, useReducer} from 'react';
 import {connect} from 'react-redux'
 import {StyleSheet, Text, View, Switch, TouchableOpacity, ActivityIndicator, Image} from 'react-native';
+import {Avatar} from 'react-native-elements'
 import {Actions} from 'react-native-router-flux';
 import {removeContact, changeConsent, addContact} from '../../store/user';
 
@@ -40,58 +41,117 @@ class SingleContact extends Component {
     const user = this.props.user
     if (!this.props.route|| !this.props.addContact) return (<ActivityIndicator />)
     if (solo.status==='accepted') {return(
-      <View>
-        <Image source={solo.imgURL} />
-        <Text>{solo.First} {solo.Last}</Text>
+      <View style={styles.container}>
+        <Avatar
+                  size="xlarge"
+                  rounded
+                  borderColor="#4faadb"
+                  borderWidth="5"
+                  source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                />
+        <Text style={styles.textBox}>{solo.First} {solo.Last}</Text>
         <Switch
-        trackColor={{ false: "#767577", true: "#a79bff" }}
-        thumbColor={solo.canTrack ? "#7a68ff" : "#dcd8dc"}
+        trackColor={{ false: "#767577", true: "#2f6380" }}
+        thumbColor={solo.canTrack ? "#2f6380" : "#dcd8dc"}
         onValueChange={value => this.handleValueChange(value)}
         value={this.state.canTrack}
         />
-        <TouchableOpacity>
-          <Text onPress={() => this.delete()}>Remove Contact</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText} onPress={() => this.delete()}>Remove Contact</Text>
         </TouchableOpacity>
       </View>
     )}
     if (solo.status==='requested') {
       return (
         <View>
-        <Text>{solo.First} {solo.Last}</Text>
-        <Text>{solo.email}</Text>
-        <TouchableOpacity>
-        <Text onPress={() => this.sendInvite()}>Confirm</Text>
+          <Avatar
+                  size="xlarge"
+                  rounded
+                  borderColor="#4faadb"
+                  borderWidth="5"
+                  source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                />
+        <Text style={styles.textBox}>{solo.First} {solo.Last}</Text>
+        <Text style={styles.textBox}>{solo.email}</Text>
+        <TouchableOpacity style={styles.button}>
+        <Text  style={styles.buttonText} onPress={() => this.sendInvite()}>Confirm</Text>
       </TouchableOpacity>
       </View>
       )
     }
     if (solo.status==='pending') {
       return (
-        <View>
-          <Text>{solo.First} {solo.Last}</Text>
-          <Text>{solo.email}</Text>
+        <View style={styles.container}>
+          <Avatar
+                  size="xlarge"
+                  rounded
+                  borderColor="#4faadb"
+                  borderWidth="5"
+                  source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                />
+          <Text style={styles.textBox} >{solo.First} {solo.Last}</Text>
+          <Text style={styles.textBox} >{solo.email}</Text>
           <TouchableOpacity>
-          <Text>Request pending...</Text>
+          <Text style={styles.textBox}>Request pending...</Text>
         </TouchableOpacity>
         </View>
       )
     }
     if (solo.status==='wasDenied') {
-      return(<View><Text>Blocked</Text></View>)
+      return(<View><Text style={styles.textBox}>Blocked</Text></View>)
     }
     else {
       return (
-        <View>
+        <View style={styles.container}>
           <Text>{solo.First} {solo.Last}</Text>
           <Text>{solo.email}</Text>
-          <TouchableOpacity>
-          <Text onPress={() => this.sendInvite()}>Send Invite</Text>
+          <TouchableOpacity style={styles.button}>
+          <Text  style={styles.buttonText} onPress={() => this.sendInvite()}>Send Invite</Text>
         </TouchableOpacity>
         </View>
       )
     }
   }
 }
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+  },
+  trackContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row'
+},
+  textBox: {
+      width: '90%',
+      margin: 5,
+      padding: 5,
+      fontSize: 20,
+      textAlign: 'center',
+  },
+  button: {
+      marginTop: 10,
+      marginBottom: 10,
+      paddingVertical: 5,
+      alignItems: 'center',
+      backgroundColor: '#4faadb',
+      borderColor: '#4faadb',
+      borderWidth: 1,
+      borderRadius: 5,
+      width: 300,
+  },
+  buttonText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#fff'
+  },
+})
+
 const mapStateToProps = state => {
   return {
     user: state.user,

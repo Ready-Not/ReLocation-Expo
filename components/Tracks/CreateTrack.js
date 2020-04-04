@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   headerText: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '600',
     marginBottom: 5,
   },
