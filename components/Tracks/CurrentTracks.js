@@ -95,7 +95,6 @@ class AllTracks extends React.Component {
 
                 onPress={() => (
                   this.props.getTrackee(track.trackee),
-                  this.props.getTrackers(track.trackers),
                   this.props.navigation.navigate('Trip', {track})
                   )}>
 

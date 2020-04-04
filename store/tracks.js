@@ -7,7 +7,7 @@ const CONFIRM_TRACK = 'CONFIRM_TRACK'
 const DECLINE_TRACK = 'DECLINE_TRACK'
 const SET_TRACK = 'SET_TRACK'
 const GOT_TRACKEE = 'GET_TRACKEE'
-const GOT_TRACKERS = 'GET_TRACKERS'
+const GOT_TRACKER = 'GET_TRACKER'
 
 
 //TRACKS ACTIONS
@@ -17,9 +17,9 @@ const gotTrackee = trackee => ({
   trackee
 })
 
-const gotTrackers = trackers => ({
-  type: GOT_TRACKERS,
-  trackers
+const gotTracker = tracker => ({
+  type: GOT_TRACKER,
+  tracker
 })
 
 const cancelTrack = trackId => ({
@@ -59,19 +59,15 @@ export const getTrackee = uid => {
   }
 }
 
-export const getTrackers = uids => {
+export const getTracker = uid => {
   return async (dispatch, getState) => {
       try {
-      let trArray = [];
-       uids.forEach(async function(uid){
           const user = await firestore
               .collection('users')
               .doc(uid)
               .get()
-          let tr = {first: user.data().First, last: user.data().Last}
-          trArray.push(tr);
-        })
-          dispatch(gotTrackers(trArray))
+          let tr = user.data().First + ' ' + user.data().Last
+          dispatch(gotTracker(tr))
       } catch (e) {
           alert(e)
       }
@@ -218,9 +214,8 @@ const tracksReducer = (state = initialState, action) => {
   switch (action.type) {
     case GOT_TRACKEE:
       return {...state, trackee: action.trackee}
-    case GOT_TRACKERS:
-      console.log(action.trackers)
-      return {...state, trackers: action.trackers}
+    case GOT_TRACKER:
+      return {...state, trackers: [...action.tracker]}
     case GET_TRACKEE_TRACKS:
       return {...state, trackeeTracks: action.payload}
       case GET_TRACKER_TRACKS:
