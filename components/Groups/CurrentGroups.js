@@ -9,31 +9,66 @@ class CurrentGroups extends Component {
     const groups = this.props.groups
     if (!groups) {
       return (
-        <View>
-          <Text>No current groups</Text>
-          <Button title="Create a Group"
-              onPress={() => this.props.navigation.navigate('Create Group')}
-            />
+        <View style={styles.container}>
+          <Text style={styles.textBox}>No current groups</Text>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText} onPress={() => this.props.navigation.navigate('Create Group')}>Create a Group</Text>
+          </TouchableOpacity>
         </View>)}
     else {return(
       <View>
-        {groups.map(group => {
+        {groups.map((group, i) => {
           return <ListItem key={group.id}
-          leftAvatar={{ source: { uri: group.icon} }}
+          leftElement={<Text style={ {fontSize: 20,
+            fontWeight: 'bold',
+            color: '#4faadb'}}>{i+1}</Text>}
           rightElement={'>'}
           title={group.name}
-          subtitle={`${group.usersInGroup.length} People`}
+          subtitle={`${group.usersInGroup.length} Members`}
           bottomDivider
           onPress={() => this.props.navigation.navigate('Group', {group: group})}
           />
         })}
-        <Button title="Create a Group"
-            onPress={() => this.props.navigation.navigate('Create Group')}
-          />
+        <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText} onPress={() => this.props.navigation.navigate('Create Group')}>Create a Group</Text>
+          </TouchableOpacity>
       </View>
     )}
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+  },
+  textBox: {
+      width: '90%',
+      margin: 5,
+      padding: 5,
+      fontSize: 20,
+      textAlign: 'center',
+  },
+  button: {
+      marginTop: 10,
+      marginBottom: 10,
+      paddingVertical: 5,
+      alignItems: 'center',
+      backgroundColor: '#4faadb',
+      borderColor: '#4faadb',
+      borderWidth: 1,
+      borderRadius: 5,
+      width: 250,
+      alignSelf: 'center'
+  },
+  buttonText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#fff'
+  },
+})
 const mapStateToProps = state => {
   return {
     user: state.user,

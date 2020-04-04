@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Button} from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {createGroup} from '../../store/user';
-import {ListItem, rightElement} from 'react-native-elements';
+import {ListItem, rightElement, Divider} from 'react-native-elements';
 
 class CreateGroup extends Component {
   constructor(){
@@ -38,7 +38,7 @@ class CreateGroup extends Component {
   renderItem = ({item}) => {
     return (<ListItem
           leftAvatar={{ source: { uri: item.imgURL} }}
-          rightElement={<Button title="Add" onPress={() => this.addToGroup(item)} />}
+          rightElement={<Button title={this.state.groupees.includes(item.uid) ? "Added" : "Add"} onPress={() => this.addToGroup(item)} />}
           title={`${item.First} ${item.Last}`}
           subtitle={item.email}
           bottomDivider
@@ -56,29 +56,35 @@ class CreateGroup extends Component {
 
   render () {
     if (!this.props.user) {
-      return <View><Text>Loading...</Text></View>
+      return <View style={styles.container}><Text style={styles.textBox}>Loading...</Text></View>
     }
     if (!this.props.contacts) {
-      return <View>
-        <Text>Add Contacts to form a group!</Text>
-        <Button title="Find Contacts"
-            onPress={() => this.props.navigation.navigate('Find Contact')}
-          />
+      return <View style={styles.container}>
+        <Text style={styles.textBox}>Add Contacts to form a group!</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText} onPress={() => this.props.navigation.navigate('Find Contact')} >Find Contacts</Text>
+        </TouchableOpacity>
       </View>
     } else {
     return(
       <View>
+        <Text style={styles.textBox}>Enter details below</Text>
+        <Divider backgroundColor='#4faadb' width='80%' alignSelf='center'/>
+        <View style={styles.rowContainer}>
+          <Text style={{fontSize: 20}}>Group Name:</Text>
+          <TextInput
+            fontSize='20'
+            value={this.state.name}
+            onChangeText={name => this.setState({name: name})}
+            placeholder="Enter Name"
+          />
+        </View>
+        <Divider backgroundColor='#4faadb' width='30%' alignSelf='center'/>
+        <Text style={styles.textBox}>Add Members:</Text>
         <TextInput
-          value={this.state.name}
-          onChangeText={name => this.setState({name: name})}
-          placeholder="Group Name"
-        />
-        <TouchableOpacity>
-          <Text onPress={() => this.handleSubmit(this.props.user.uid)}>Create Group</Text>
-        </TouchableOpacity>
-
-        <TextInput
-          placeholder="Search"
+          fontSize='20'
+          padding="3%"
+          placeholder="Search Contacts..."
           onChangeText={(value)=> this.searchContacts(value)}
         />
         <FlatList
@@ -87,13 +93,57 @@ class CreateGroup extends Component {
           keyExtractor={(item)=> item.uid}
           ListEmptyComponent={() => (
           <View>
-            <Text>No Contacts Found</Text>
+            <Text style={styles.textBox}>No Contacts Found</Text>
           </View>)}
         />
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText} onPress={() => this.handleSubmit(this.props.user.uid)}>Create Group</Text>
+        </TouchableOpacity>
       </View>
     )}
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+  },
+  rowContainer: {
+    margin: 10,
+    padding: 10,
+    flexDirection: 'row',
+    fontSize: 20,
+    justifyContent: 'space-between'
+},
+  textBox: {
+      width: '90%',
+      margin: 5,
+      padding: 5,
+      fontSize: 20,
+      textAlign: 'center',
+  },
+  button: {
+      marginTop: 10,
+      marginBottom: 10,
+      paddingVertical: 5,
+      alignItems: 'center',
+      backgroundColor: '#4faadb',
+      borderColor: '#4faadb',
+      borderWidth: 1,
+      borderRadius: 5,
+      width: 250,
+      alignSelf: 'center'
+  },
+  buttonText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#fff'
+  },
+})
+
 const mapStateToProps = state => {
 return {
   user: state.user,
