@@ -21,6 +21,7 @@ import CurrentGroups from './components/Groups/CurrentGroups';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {SafeAreaView} from 'react-native';
 
 //To solve "can't find variable atob" error
 import {decode, encode} from 'base-64'
@@ -30,6 +31,7 @@ if (!global.atob) { global.atob = decode }
 //To get rid of warnings for android
 import { YellowBox } from 'react-native';
 import _ from 'lodash';
+import { ScrollView } from 'react-native-gesture-handler';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -72,9 +74,9 @@ class App extends Component {
   render() {
       return (
         <Provider store={store}>
-        <NavigationContainer>
+          <NavigationContainer>
           <LogIn />
-        </NavigationContainer>
+          </NavigationContainer>
         </Provider>
       );
     }
