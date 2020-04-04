@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, TextComponent} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, TextComponent, Button} from 'react-native';
 import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux';
 import {getTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTracker} from '../../store/tracks'
@@ -15,7 +15,8 @@ class SingleTrack extends Component {
       inProgress: false,
       error: null,
       destination: '',
-      trackers: []
+      trackers: [],
+      eta: 'a time'
     }
   }
 
@@ -24,6 +25,65 @@ class SingleTrack extends Component {
     this.props.getTrackee(track.trackee)
     this.attemptReverseGeocodeAsync()
     track.trackers.map(tracker => this.getTrackerName(tracker))
+    this.getETA(track)
+  }
+
+  needConfirmation(track) {
+    if (track.confirm == 'pending') {
+      return (
+        <View>
+        <Button
+        title='Confirm track'
+        onPress={() => this.props.confirmTrack(track.id)}
+        >
+        </Button>
+        <Button
+        title='Decline track'
+        // onPress={() => this.props.declineTrack(track.id)}
+        onPress={() =>
+          Alert.alert(
+            'Decline Track',
+            'Are you sure you want to decline the track',
+            [
+              {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.declineTrack(track.id)
+              },
+            ],
+            { cancelable: false }
+          )}
+        >
+        </Button>
+        </View>
+      )
+    } else if (track.confirm == 'confirmed') {
+      return (
+        <Button title="Cancel track"
+                onPress={() =>
+                  Alert.alert(
+                    'Cancel Track',
+                    'Are you sure you want to delete the track',
+                    [
+                      {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                      },
+                      {
+                      text: 'Yes',
+                      onPress: (id) => this.props.cancelTrack(track.id)
+                      },
+                    ],
+                    { cancelable: false }
+                  )}
+              />
+      )
+    }
   }
 
 
@@ -53,6 +113,11 @@ class SingleTrack extends Component {
       this.setState({ trackers })
     }
 
+    getETA(track) {
+      let eta = track.ETA.toDate().toLocaleString().split(',')
+      eta = eta[0] + ' at ' + eta[1]
+      this.setState({ eta })
+    }
 
   render() {
     const {track} = this.props.route.params
@@ -72,22 +137,23 @@ class SingleTrack extends Component {
           {this.props.trackee.first}'s Trip Details
         </Text>
 
-        <Text> Friends
+        <Text>
         {
           this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)
         }
-        are checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely
+        are checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely by {this.state.eta}
         </Text>
 
     <Image
     style={{height: 100, width: 100}}
     source={{uri: "https://snazzymaps.com/Images/img-style-preview-default.png"}}
     ></Image>
-    <Text>{JSON.stringify(track)}</Text>
-    {
-      track.confirm ? <Text>Confirmed</Text> : <Text>Not yet confirmed</Text>
-    }
+
+       {this.needConfirmation(track)}
+
       </View>
+
+
     )
    }
  }
