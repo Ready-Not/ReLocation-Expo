@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, TextComponent, Button} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image, ActivityIndicator, TextComponent, Button, Alert} from 'react-native';
+import {Avatar} from 'react-native-elements'
 import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux';
 import {getTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTracker} from '../../store/tracks'
@@ -16,7 +17,8 @@ class SingleTrack extends Component {
       error: null,
       destination: '',
       trackers: [],
-      eta: 'a time'
+      eta: 'a time',
+      be: 'is'
     }
   }
 
@@ -34,7 +36,9 @@ class SingleTrack extends Component {
         <View>
         <Button
         title='Confirm track'
-        onPress={() => this.props.confirmTrack(track.id)}
+        onPress={() => (
+          this.props.navigation.navigate('Trip', {track}),
+          this.props.confirmTrack(track.id))}
         >
         </Button>
         <Button
@@ -111,6 +115,7 @@ class SingleTrack extends Component {
       let tr = user.data().First + ' ' + user.data().Last
       trackers.push(tr)
       this.setState({ trackers })
+      if(trackers.length !== 1) this.setState({ be: 'are'})
     }
 
     getETA(track) {
@@ -131,23 +136,43 @@ class SingleTrack extends Component {
     }
     else {
     return (
-      <View>
+      <View style={styles.container}>
         <Text
-          style={{textAlign: "center", fontSize: 18}}>
+          style={styles.title}>
           {this.props.trackee.first}'s Trip Details
         </Text>
 
-        <Text>
+        <Avatar
+                  size="xlarge"
+                  rounded
+                  borderColor="#4faadb"
+                  borderWidth="5"
+                  source={{uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'}}
+                />
+
+        <Text style={styles.textBox}>
         {
           this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)
         }
-        are checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely by {this.state.eta}
+        {this.state.be} checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely on {this.state.eta}
         </Text>
 
-    <Image
-    style={{height: 100, width: 100}}
-    source={{uri: "https://snazzymaps.com/Images/img-style-preview-default.png"}}
-    ></Image>
+        <MapView
+        style={styles.map}
+        initialRegion={{
+        latitude: `${track.destination.latitude}`,
+        longitude: `${track.destination.longitude}`,
+        latitudeDelta: 0.008,
+        longitudeDelta: 0.005
+        }}
+        >
+        <MapView.Marker
+          coordinate={{
+            latitude: `${track.destination.latitude}`,
+            longitude: `${track.destination.longitude}`}}
+          title={`${this.props.trackee.first}'s destination`}
+        />
+        </MapView>
 
        {this.needConfirmation(track)}
 
@@ -161,10 +186,10 @@ class SingleTrack extends Component {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start'
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
   },
   singleTrackBox: {
     flexDirection: 'row',
@@ -176,13 +201,57 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.3)',
     padding: 10,
   },
+  button: {
+    marginTop: 10,
+    marginBottom: 10,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: '#4faadb',
+    borderColor: '#4faadb',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 300,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff'
+  },
+  textBox: {
+    width: '90%',
+    margin: 5,
+    padding: 5,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  title: {
+    marginTop: 10,
+    marginBottom: 10,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: '#4faadb',
+    borderColor: '#4faadb',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 300,
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: "center",
+  },
+  map: {
+    height: 200,
+    width: 200,
+    margin: 20,
+    borderWidth: 2,
+  }
 })
 
 const mapDispatchToProps = dispatch => ({
   getTracks: () => dispatch(getTracksThunk()),
   cancelTrack: () => dispatch(cancelTrackThunk()),
-  confirmTrack: () => dispatch(confirmTrackThunk()),
-  declineTrack: () => dispatch(declineTrackThunk()),
+  confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
+  declineTrack: (id) => dispatch(declineTrackThunk(id)),
   getTrackee: (uid) => dispatch(getTrackee(uid)),
   getTracker: (uids) => dispatch(getTracker(uids))
 })
