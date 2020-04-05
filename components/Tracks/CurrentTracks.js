@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, 
 import { Dropdown } from 'react-native-material-dropdown';
 import { connect } from 'react-redux'
 import firebase from '../../config';
-import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk} from '../../store/tracks'
+import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTrackers} from '../../store/tracks'
 
 
 class AllTracks extends React.Component {
@@ -93,7 +93,10 @@ class AllTracks extends React.Component {
 
               <TouchableOpacity
 
-                onPress={() => this.props.navigation.navigate('Trip', {track})}>
+                onPress={() => (
+                  this.props.getTrackee(track.trackee),
+                  this.props.navigation.navigate('Trip', {track})
+                  )}>
 
                 <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
                 <Text>Track status: {track.confirm}</Text>
@@ -155,7 +158,9 @@ const mapDispatchToProps = dispatch => ({
   getTrackerTracks: () => dispatch(getTrackerTracksThunk()),
   cancelTrack: (id) => dispatch(cancelTrackThunk(id)),
   confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
-  declineTrack: (id) => dispatch(declineTrackThunk(id))
+  declineTrack: (id) => dispatch(declineTrackThunk(id)),
+  getTrackee: (id) => dispatch(getTrackee(id)),
+  getTrackers:(id) => dispatch(getTrackers(id))
 })
 
 const mapStateToProps = (state) => {
