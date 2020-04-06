@@ -1,9 +1,10 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ListItem, TouchableOpacityBase, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, TouchableOpacityBase, Alert, ActivityIndicator } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import { connect } from 'react-redux'
 import firebase from '../../config';
 import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTrackers} from '../../store/tracks'
+import {ListItem} from 'react-native-elements';
 
 
 class AllTracks extends React.Component {
@@ -17,20 +18,32 @@ class AllTracks extends React.Component {
     if (track.confirm == 'pending') {
       return (
         <View>
-        <Button
+          <Text style={styles.rightElement}
+          onPress={() => this.props.confirmTrack(track.id)}>Confirm Track</Text>
+          <Text style={styles.rightElement}
+          onPress={() =>
+            Alert.alert('Decline Track',
+              'Are you sure you want to decline the track',
+              [{
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+                },
+                {
+                text: 'Yes',
+                onPress: (id) => this.props.declineTrack(track.id)
+                },],{ cancelable: false }
+            )}>Decline Track</Text>
+        {/* <Button
         title='Confirm track'
-        onPress={() => this.props.confirmTrack(track.id)}
-        >
-        </Button>
-        <Button
+        onPress={() => this.props.confirmTrack(track.id)}>
+        </Button> */}
+        {/* <Button
         title='Decline track'
-        // onPress={() => this.props.declineTrack(track.id)}
         onPress={() =>
-          Alert.alert(
-            'Decline Track',
+          Alert.alert('Decline Track',
             'Are you sure you want to decline the track',
-            [
-              {
+            [{
               text: 'Cancel',
               onPress: () => console.log('Cancel Pressed'),
               style: 'cancel',
@@ -38,37 +51,41 @@ class AllTracks extends React.Component {
               {
               text: 'Yes',
               onPress: (id) => this.props.declineTrack(track.id)
-              },
-            ],
-            { cancelable: false }
-          )}
-        >
-        </Button>
+              },],{ cancelable: false }
+          )}>
+        </Button> */}
         </View>
       )
     } else if (track.confirm == 'confirmed') {
       return (
-        <Button title="Cancel track"
-                onPress={() =>
-                  Alert.alert(
-                    'Cancel Track',
-                    'Are you sure you want to delete the track',
-                    [
-                      {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                      },
-                      {
-                      text: 'Yes',
-                      onPress: (id) => this.props.cancelTrack(track.id)
-                      },
-                    ],
-                    { cancelable: false }
-                  )}
-              />
-      )
-    }
+        <Text style={styles.rightElement} onPress={() =>
+          Alert.alert('Cancel Track',
+            'Are you sure you want to delete the track',
+            [{
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.cancelTrack(track.id)
+              },], {cancelable: false}
+          )}>Cancel Track</Text>
+        // <Button title="Cancel track"
+        //   onPress={() =>
+        //     Alert.alert('Cancel Track',
+        //       'Are you sure you want to delete the track',
+        //       [{
+        //         text: 'Cancel',
+        //         onPress: () => console.log('Cancel Pressed'),
+        //         style: 'cancel',
+        //         },
+        //         {
+        //         text: 'Yes',
+        //         onPress: (id) => this.props.cancelTrack(track.id)
+        //         },], {cancelable: false}
+        //     )}/>
+      )}
   }
 
   componentDidMount() {
@@ -77,70 +94,83 @@ class AllTracks extends React.Component {
   }
 
   render() {
+    const {trackeeTracks, trackerTracks} = this.props
     if (!this.props.trackeeTracks || !this.props.trackerTracks) {
-      return (
-        <ActivityIndicator />
-      )
+      return (<ActivityIndicator />)
     }
-
     return (
-      <View style={styles.container}>
-          <Text>WHO IS TRACKING ME:</Text>
-          {
-          this.props.trackeeTracks.map((track) => {
+      <View>
+        {trackeeTracks.length ? <Text style={styles.title}>My Current Trips:</Text> : <></>}
+        {trackeeTracks ? trackeeTracks.map(track => {
+          let date = track.ETA.toDate().toLocaleString().split(' ')[0]
+          let timeNum = track.ETA.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
+          let timeM = track.ETA.toDate().toLocaleString().split(' ')[2].toLowerCase()
+          return(
+            <ListItem
+            key={track.id}
+            title={`ETA: ${date} ${timeNum} ${timeM}`}
+            subtitle={`Status: ${track.confirm}`}
+            rightElement={this.needConfirmation(track)}
+            bottomDivider
+            onPress={() => (
+              this.props.getTrackee(track.trackee),
+              this.props.navigation.navigate('Trip', {track})
+              )}
+            />
+          )
+            }) : <></>}
+          {trackerTracks.length ? <Text style={styles.title}>Trips I'm Monitoring:</Text> : <></>}
+          {trackerTracks ? trackerTracks.map(track => {
+            let date = track.ETA.toDate().toLocaleString().split(' ')[0]
+            let timeNum = track.ETA.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
+          let timeM = track.ETA.toDate().toLocaleString().split(' ')[2].toLowerCase()
+          return(
+              <ListItem
+              key={track.id}
+              title={`ETA: ${date} ${timeNum} ${timeM}`}
+              subtitle={`Status: ${track.confirm}`}
+              rightElement={this.needConfirmation(track)}
+              bottomDivider
+              onPress={() => (
+                this.props.getTrackee(track.trackee),
+                this.props.navigation.navigate('Trip', {track})
+                )} />
+              )
+            }) : <></>}
+          {/* {this.props.trackeeTracks.map((track) => {
           return(
             <View key={track.id} style={styles.singleTrackBox}>
-
               <TouchableOpacity
-
                 onPress={() => (
                   this.props.getTrackee(track.trackee),
                   this.props.navigation.navigate('Trip', {track})
                   )}>
-
-                <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
-                <Text>Track status: {track.confirm}</Text>
+                <Text style={styles.textBox}>ETA: {track.ETA.toDate().toLocaleString()}</Text>
+                <Text style={styles.textBox}>Track status: {track.confirm}</Text>
               </TouchableOpacity>
               {this.needConfirmation(track)}
            </View>
           )}
-          )}
-
-        <View style={styles.container}>
-        <Text>I AM TRACKING:</Text>
-        {
-        this.props.trackerTracks.map((track) => {
-
+          )} */}
+        {/* <View style={styles.container}>
+        <Text styles={styles.title}>Trips I'm following:</Text>
+        {this.props.trackerTracks.map((track) => {
         return(
-
           <View key={track.id} style={styles.singleTrackBox}>
            <TouchableOpacity
-
               onPress={() => this.props.navigation.navigate('Trip', {track})}>
-{/*
-             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text> */}
+             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
              <Text>Track status: {track.confirm}</Text>
             </TouchableOpacity>
           </View>
-
-
-
          )}
          )}
-        </View>
-
+        </View> */}
   </View>)
   }
-
 }
 
 const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start'
-  },
   singleTrackBox: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -149,8 +179,61 @@ const styles = StyleSheet.create({
     borderTopWidth: 0.5,
     borderBottomWidth: 0.5,
     borderColor: 'rgba(0,0,0,0.3)',
-    padding: 10,
+    padding: 5,
   },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    margin: 3,
+    padding: 3,
+},
+buttonContainer: {
+  flex: 1,
+  flexDirection: 'row',
+  backgroundColor: '#fff',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  paddingLeft: 3,
+  marginBottom: 3,
+},
+title: {
+  margin: 7,
+  padding: 7,
+  fontSize: 24,
+  textAlign: 'center',
+  color: '#4faadb',
+  fontWeight: 'bold',
+},
+textBox: {
+    width: '75%',
+    fontSize: 16,
+    marginLeft: 5,
+    textAlign: 'left',
+},
+button: {
+    marginTop: 10,
+    marginBottom: 10,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: '#4faadb',
+    borderColor: '#4faadb',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 160
+},
+buttonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff'
+},
+rightElement: {
+  fontSize: 18,
+  color: '#4faadb',
+  fontStyle: 'italic',
+  marginVertical: 5,
+},
 })
 
 const mapDispatchToProps = dispatch => ({

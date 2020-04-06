@@ -24,6 +24,7 @@ class SingleTrack extends Component {
 
   componentDidMount(){
     const {track} = this.props.route.params
+    // this.setState({latitude: track.destination.latitude, longitude: track.destination.longitude})
     this.props.getTrackee(track.trackee)
     this.attemptReverseGeocodeAsync()
     track.trackers.map(tracker => this.getTrackerName(tracker))
@@ -33,17 +34,37 @@ class SingleTrack extends Component {
   needConfirmation(track) {
     if (track.confirm == 'pending') {
       return (
-        <View>
-        <Button
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => (
+          this.props.navigation.navigate('Trip', {track}),
+          this.props.confirmTrack(track.id))}>
+            <Text style={styles.buttonText}>Confirm Track</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() =>
+          Alert.alert('Decline Track',
+            'Are you sure you want to decline the track',
+            [{
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.declineTrack(track.id)
+              },],
+            { cancelable: false }
+          )}>
+            <Text style={styles.buttonText}>Decline Track</Text>
+          </TouchableOpacity>
+        {/* <Button
         title='Confirm track'
         onPress={() => (
           this.props.navigation.navigate('Trip', {track}),
           this.props.confirmTrack(track.id))}
         >
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
         title='Decline track'
-        // onPress={() => this.props.declineTrack(track.id)}
         onPress={() =>
           Alert.alert(
             'Decline Track',
@@ -62,30 +83,47 @@ class SingleTrack extends Component {
             { cancelable: false }
           )}
         >
-        </Button>
+        </Button> */}
         </View>
       )
     } else if (track.confirm == 'confirmed') {
       return (
-        <Button title="Cancel track"
-                onPress={() =>
-                  Alert.alert(
-                    'Cancel Track',
-                    'Are you sure you want to delete the track',
-                    [
-                      {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                      },
-                      {
-                      text: 'Yes',
-                      onPress: (id) => this.props.cancelTrack(track.id)
-                      },
-                    ],
-                    { cancelable: false }
-                  )}
-              />
+        <TouchableOpacity style={styles.button} onPress={() =>
+          Alert.alert(
+            'Cancel Track',
+            'Are you sure you want to delete the track',
+            [{
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+              },
+              {
+              text: 'Yes',
+              onPress: (id) => this.props.cancelTrack(track.id)
+              },],
+            { cancelable: false }
+          )}>
+          <Text style={styles.buttonText}>Cancel Track</Text>
+        </TouchableOpacity>
+        // <Button title="Cancel track"
+        //         onPress={() =>
+        //           Alert.alert(
+        //             'Cancel Track',
+        //             'Are you sure you want to delete the track',
+        //             [
+        //               {
+        //               text: 'Cancel',
+        //               onPress: () => console.log('Cancel Pressed'),
+        //               style: 'cancel',
+        //               },
+        //               {
+        //               text: 'Yes',
+        //               onPress: (id) => this.props.cancelTrack(track.id)
+        //               },
+        //             ],
+        //             { cancelable: false }
+        //           )}
+        //       />
       )
     }
   }
@@ -126,6 +164,7 @@ class SingleTrack extends Component {
 
   render() {
     const {track} = this.props.route.params
+    // const {latitude, longitude} = this.state
 
     if(!this.props.trackee || !this.state.trackers){
       return (
@@ -141,38 +180,34 @@ class SingleTrack extends Component {
           style={styles.title}>
           {this.props.trackee.first}'s Trip Details
         </Text>
-
         <Avatar
-                  size="xlarge"
-                  rounded
-                  borderColor="#4faadb"
-                  borderWidth="5"
-                  source={{uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'}}
-                />
-
+          size="xlarge"
+          rounded
+          borderColor="#4faadb"
+          borderWidth="5"
+          source={{uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'}}
+        />
         <Text style={styles.textBox}>
-        {
-          this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)
-        }
+        {this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)}
         {this.state.be} checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely on {this.state.eta}
         </Text>
-
-        <MapView
+        {/* <MapView
         style={styles.map}
         initialRegion={{
-        latitude: `${track.destination.latitude}`,
-        longitude: `${track.destination.longitude}`,
+        latitude: `${latitude}`,
+        longitude: `${longitude}`,
         latitudeDelta: 0.008,
         longitudeDelta: 0.005
         }}
         >
         <MapView.Marker
+          pinColor='#4faadb'
           coordinate={{
-            latitude: `${track.destination.latitude}`,
-            longitude: `${track.destination.longitude}`}}
+            latitude: `${latitude}`,
+            longitude: `${longitude}`}}
           title={`${this.props.trackee.first}'s destination`}
         />
-        </MapView>
+        </MapView> */}
 
        {this.needConfirmation(track)}
 
@@ -202,21 +237,29 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 10,
+    marginHorizontal: 10,
     paddingVertical: 5,
     alignItems: 'center',
     backgroundColor: '#4faadb',
     borderColor: '#4faadb',
     borderWidth: 1,
     borderRadius: 5,
-    width: 300,
+    width: 150,
   },
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff'
   },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'space-around',
+},
   textBox: {
     width: '90%',
     margin: 5,

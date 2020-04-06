@@ -27,7 +27,7 @@ class DisCurrentContacts extends Component {
       const requested = this.props.contacts.filter(el => {if (el.status==='requested') return el})
       return(
       <View>
-        {contacts.length ? <View><Text style={styles.textBox}>Your Contacts</Text>
+        {contacts.length ? <View><Text style={styles.title}>Your Contacts</Text>
         {contacts.map(contact => {
           return <ListItem key={contact.uid}
           leftAvatar={{ source: { uri: contact.imgURL} }}
@@ -38,7 +38,7 @@ class DisCurrentContacts extends Component {
           onPress={() => this.props.navigation.navigate('Contact', {solo: contact})}
           />
         })}</View> : <Text> </Text>}
-        {pending.length ? <View><Text style={styles.textBox}>Pending Contacts</Text>
+        {pending.length ? <View><Text style={styles.title}>Pending Contacts</Text>
         {pending.map(contact => {
           return <ListItem key={contact.uid}
           leftAvatar={{ source: { uri: contact.imgURL} }}
@@ -49,11 +49,11 @@ class DisCurrentContacts extends Component {
           onPress={() => this.props.navigation.navigate('Contact', {solo: contact})}
           />
         })}</View> : <Text></Text>}
-        {requested.length ? <View><Text style={styles.textBox}>Requested Contacts</Text>
+        {requested.length ? <View><Text style={styles.title}>Requested Contacts</Text>
         {requested.map(contact => {
           return <ListItem key={contact.uid}
           leftAvatar={{ source: { uri: contact.imgURL} }}
-          rightAvatar={{source: {uri: 'https://svgsilh.com/png-1024/40166.png'}}}
+          rightElement={'>'}
           title={`${contact.First} ${contact.Last}`}
           subtitle={contact.email}
           bottomDivider
@@ -73,6 +73,14 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'flex-start'
+  },
+  title: {
+    margin: 7,
+    padding: 7,
+    fontSize: 24,
+    textAlign: 'center',
+    color: '#4faadb',
+    fontWeight: 'bold',
   },
   textBox: {
       width: '90%',

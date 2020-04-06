@@ -42,6 +42,7 @@ class SingleContact extends Component {
     if (!this.props.route|| !this.props.addContact) return (<ActivityIndicator />)
     if (solo.status==='accepted') {return(
       <View style={styles.container}>
+        <Text style={styles.title}>{solo.First} {solo.Last}</Text>
         <Avatar
                   size="xlarge"
                   rounded
@@ -49,13 +50,15 @@ class SingleContact extends Component {
                   borderWidth="5"
                   source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
-        <Text style={styles.textBox}>{solo.First} {solo.Last}</Text>
-        <Switch
-        trackColor={{ false: "#767577", true: "#2f6380" }}
-        thumbColor={solo.canTrack ? "#2f6380" : "#dcd8dc"}
-        onValueChange={value => this.handleValueChange(value)}
-        value={this.state.canTrack}
-        />
+        <View style={styles.buttonContainer}>
+          <Text style={styles.textBoxTwo}>Allow {solo.First} to track you continuously?</Text>
+          <Switch
+          trackColor={{ false: "#767577", true: "#2f6380" }}
+          thumbColor={solo.canTrack ? "#2f6380" : "#dcd8dc"}
+          onValueChange={value => this.handleValueChange(value)}
+          value={this.state.canTrack}
+          />
+        </View>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText} onPress={() => this.delete()}>Remove Contact</Text>
         </TouchableOpacity>
@@ -63,7 +66,8 @@ class SingleContact extends Component {
     )}
     if (solo.status==='requested') {
       return (
-        <View>
+        <View style={styles.container}>
+        <Text style={styles.title}>{solo.First} {solo.Last}</Text>
           <Avatar
                   size="xlarge"
                   rounded
@@ -71,7 +75,6 @@ class SingleContact extends Component {
                   borderWidth="5"
                   source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
-        <Text style={styles.textBox}>{solo.First} {solo.Last}</Text>
         <Text style={styles.textBox}>{solo.email}</Text>
         <TouchableOpacity style={styles.button}>
         <Text  style={styles.buttonText} onPress={() => this.sendInvite()}>Confirm</Text>
@@ -82,6 +85,7 @@ class SingleContact extends Component {
     if (solo.status==='pending') {
       return (
         <View style={styles.container}>
+          <Text style={styles.title} >{solo.First} {solo.Last}</Text>
           <Avatar
                   size="xlarge"
                   rounded
@@ -89,7 +93,6 @@ class SingleContact extends Component {
                   borderWidth="5"
                   source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
-          <Text style={styles.textBox} >{solo.First} {solo.Last}</Text>
           <Text style={styles.textBox} >{solo.email}</Text>
           <TouchableOpacity>
           <Text style={styles.textBox}>Request pending...</Text>
@@ -103,8 +106,8 @@ class SingleContact extends Component {
     else {
       return (
         <View style={styles.container}>
-          <Text>{solo.First} {solo.Last}</Text>
-          <Text>{solo.email}</Text>
+          <Text style={styles.title}>{solo.First} {solo.Last}</Text>
+          <Text style={styles.textBox}>{solo.email}</Text>
           <TouchableOpacity style={styles.button}>
           <Text  style={styles.buttonText} onPress={() => this.sendInvite()}>Send Invite</Text>
         </TouchableOpacity>
@@ -120,12 +123,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'flex-start'
   },
-  trackContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
+  buttonContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    flexDirection: 'row'
+    alignContent: 'space-between',
+    margin: 1,
+    fontSize: 18,
 },
   textBox: {
       width: '90%',
@@ -134,6 +137,28 @@ const styles = StyleSheet.create({
       fontSize: 20,
       textAlign: 'center',
   },
+  textBoxTwo: {
+    width: '80%',
+    margin: 5,
+    padding: 5,
+    fontSize: 17,
+    textAlign: 'left',
+},
+title: {
+  marginTop: 10,
+  marginBottom: 10,
+  paddingVertical: 5,
+  alignItems: 'center',
+  backgroundColor: '#4faadb',
+  borderColor: '#4faadb',
+  borderWidth: 1,
+  borderRadius: 5,
+  width: 300,
+  fontSize: 25,
+  fontWeight: 'bold',
+  color: '#fff',
+  textAlign: "center",
+},
   button: {
       marginTop: 10,
       marginBottom: 10,
@@ -143,7 +168,7 @@ const styles = StyleSheet.create({
       borderColor: '#4faadb',
       borderWidth: 1,
       borderRadius: 5,
-      width: 300,
+      width: 210,
   },
   buttonText: {
       fontSize: 20,
