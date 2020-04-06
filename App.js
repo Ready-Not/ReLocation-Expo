@@ -33,7 +33,7 @@ import { YellowBox } from 'react-native';
 import _ from 'lodash';
 import { ScrollView } from 'react-native-gesture-handler';
 
-YellowBox.ignoreWarnings(['Setting a timer']);
+YellowBox.ignoreWarnings(['Setting a timer', 'Warning: Failed prop type: Invalid prop `rightElement` supplied to `ListItem`.']);
 const _console = _.clone(console);
 console.warn = message => {
   if (message.indexOf('Setting a timer') <= -1) {
