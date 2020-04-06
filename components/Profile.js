@@ -62,16 +62,16 @@ class Profile extends React.Component {
                    mapType='mutedStandard'
                    style={styles.map}
                    initialRegion={{
-                   latitude: `${this.state.latitude}`,
-                   longitude: `${this.state.longitude}`,
+                   latitude: Number(`${this.state.latitude}`),
+                   longitude: Number(`${this.state.longitude}`),
                    latitudeDelta: 0.008,
                    longitudeDelta: 0.005
                    }}>
                    <MapView.Marker
                     pinColor='#4faadb'
                     coordinate={{
-                    latitude: `${this.state.latitude}`,
-                    longitude: `${this.state.longitude}`}}
+                    latitude: Number(`${this.state.latitude}`),
+                    longitude: Number(`${this.state.longitude}`)}}
                     title={`${this.props.user.First}'s current location`}
                     />
                     </MapView>
