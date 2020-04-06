@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, Platform, ScrollView, TouchableOpacityBase } from 'react-native'
 import { Dropdown } from 'react-native-material-dropdown';
 import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
@@ -28,7 +28,9 @@ class TrackForm extends React.Component {
       finalLocation: null,
       error: null,
       trackee: '',
-      trackers: []
+      trackers: [],
+      dateTimeMode: '',
+      dateTimeShow: false
     }
     this.handleAddress = this.handleAddress.bind(this)
   }
@@ -89,18 +91,24 @@ class TrackForm extends React.Component {
 
   _onPress = item => {
     this.setState({
-      trackee: item.uid
+      trackee: item.uid,
     });
+
   }
 
-  addTracker = item => {
+  changeTracker = item => {
     let trackers = this.state.trackers
       if(!trackers.includes(item.uid)){
       trackers.push(item.uid)
       this.setState({
         trackers
       })
-      }
+    } else {
+      let newTrackers = trackers.filter(tracker => tracker !== item.uid)
+      this.setState({
+        trackers: newTrackers
+      })
+    }
   }
 
   handleAddress = event => {
@@ -109,8 +117,30 @@ class TrackForm extends React.Component {
     })
   }
 
+  showDatepicker = () => {
+    this.setState({
+      dateTimeMode: 'date',
+      dateTimeShow: true
+    })
+  };
+
+  showTimepicker = () => {
+    this.setState({
+      dateTimeMode: 'time',
+      dateTimeShow: true
+    })
+  };
+
+  // onDateTimeChange = (event, selectedDate) => {
+  //   this.setState({
+  //     dateTimeShow: false,
+  //     ETA: selectedtDate
+  //   })
+  // };
+
   componentDidMount () {
     this._getLocationAsync()
+    console.log(this.state.ETA)
   }
 
   render() {
@@ -129,95 +159,138 @@ class TrackForm extends React.Component {
           <Text style={styles.headerText}>Select location</Text>
         </View> */}
 
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Trip Destination</Text>
+        </View>
+
         <TextInput
         value={this.state.targetAddress}
         onChange={this.handleAddress}
-        placeholder='Enter Trip Destination'
+        placeholder='Enter Address'
         style={styles.inputBox}
         ></TextInput>
 
-        <View style={styles.actionContainer}>
+        {/* <View style={styles.actionContainer}>
           <Button
               onPress={this._attemptGeocodeAsync}
               title="Set Destination"
               disabled={typeof this.state.targetAddress !== 'string'}
               style={styles.button}
             />
-        </View>
+        </View> */}
 
         {/* <View style={styles.separator} /> */}
 
         <View style={styles.headerContainer}>
-          <Text>Who are we safeguarding today?</Text>
+          <Text style={styles.headerText}>Who are we safeguarding today?</Text>
         </View>
 
+        <View style={{height: 100, width: "90%"}}>
         <FlatList
         data={data}
+        style={[styles.list, {width: "100%"} ]}
         renderItem={({item, index, separators}) => (
           <TouchableHighlight
             key={item.uid}
+            style={[styles.listItemCont, this.state.trackee === item.uid ? { backgroundColor: "#4faadb" } : {}]}
             onPress={() => this._onPress(item)}
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}>
-            <View style={{backgroundColor: 'white'}}>
-              <Text>{item.value}</Text>
-            </View>
+            <Text style={styles.listItem}>{item.value}</Text>
           </TouchableHighlight>
         )}
         keyExtractor={item => item.uid}
       />
+      </View>
 
-      <View style={styles.separator} />
+      {/* <View style={styles.separator} /> */}
 
+      <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>What is ETA?</Text>
+      </View>
+
+        <Text style={[styles.inputBoxText, {fontSize: 20, marginBottom: 5, color: '#4faadb'}]}>{this.state.ETA.toLocaleDateString()} {this.state.ETA.toLocaleTimeString()}</Text>
+
+      {!this.state.dateTimeShow && (<View style={styles.dateTimeContainer}>
+        <TouchableOpacity style={styles.dateTimeButton}>
+        <Text
+          onPress={() => this.showDatepicker()}>Change Date</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dateTimeButton}>
+        <Text
+          onPress={() => this.showTimepicker()}>Change Time</Text>
+        </TouchableOpacity>
+        </View>
+      )}
+
+        {this.state.dateTimeShow && (
+        <View style={{width: "90%", alignItems: 'center'}}>
         <DateTimePicker
+          style={{width: "90%"}}
           value={this.state.ETA}
-          style={{ width: 200 }}
-          mode={'time'}
+          mode={this.state.dateTimeMode}
           is24Hour={true}
           display="default"
-          onChange={(event, selectedTime) => this.setState({ETA: selectedTime})}
+          onChange={(event, selectedDate) => {
+            const currentDate = selectedDate || this.state.ETA
+            if (Platform.OS !== 'ios') {
+              this.setState ({
+                dateTimeShow: false
+              })
+            }
+            this.setState({ETA: currentDate})
+          }}
         />
-
-        <DateTimePicker
-          value={this.state.ETA}
-          style={{ width: 200 }}
-          display="default"
-          onChange={(event, selectedDate) => this.setState({ETA: selectedDate})}
-        />
-
-        {/* <View style={styles.separator} /> */}
+        <TouchableOpacity style={styles.dateTimeButton}>
+        <Text style={styles.buttonText}
+          onPress={() =>
+          {this.setState({dateTimeShow: false})
+          }}>{`Set ${this.state.dateTimeMode}`}</Text>
+        </TouchableOpacity>
+        </View>
+        )}
 
         <View style={styles.headerContainer}>
-          <Text>Who's Checking In'?</Text>
+          <Text style={styles.headerText}>Who's Checking In?</Text>
         </View>
+
 
         <FlatList
         data={data}
+        style={styles.list}
         renderItem={({item, index, separators}) => (
           <TouchableHighlight
             key={item.uid}
-            onPress={() => this.addTracker(item)}
+            style={[styles.listItemCont, this.state.trackers.includes(item.uid) ? { backgroundColor: "#4faadb" } : {}]}
+            onPress={() => this.changeTracker(item)}
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}>
-            <View style={{backgroundColor: 'white'}}>
-              <Text>{item.value}</Text>
-            </View>
+            <Text style={styles.listItem}>{item.value}</Text>
           </TouchableHighlight>
         )}
         keyExtractor={item => item.uid}
       />
-
-        <Button title="Submit Your Tracking Request" onPress={() => {
+        <View style={styles.dateTimeContainer}>
+        <TouchableOpacity style={styles.button}>
+        <Text
+          onPress={async () => {
+          const finDest = await this._attemptGeocodeAsync()
+          console.log(finDest)
           this.props.setTrack(this.state)
           this.props.navigation.navigate('All Trips')}
         }
-        />
-      <Button title="See all my tracks" onPress={() => {
-          this.props.navigation.navigate('All Trips')}
-        }
-        />
+          style={styles.buttonText}>
+            Submit</Text>
+          </TouchableOpacity>
 
-        {this.state.trackers}
+          <TouchableOpacity style={styles.button}>
+          <Text onPress={() => {
+          this.props.navigation.navigate('All Trips')}
+           }
+           style={styles.buttonText}>
+             See all tracks</Text>
+        </TouchableOpacity>
+        </View>
       </View>
     )
   }
@@ -226,36 +299,73 @@ class TrackForm extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'flex-start'
+    flex: 1,
+    height: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
+    padding: 10,
+  },
+  list: {
+   width: '90%',
+   height: 5
+  },
+  listItem: {
+    paddingTop: 2,
+    paddingBottom: 2,
+    fontSize: 20,
+  },
+  // hr: {
+  //   height: 1,
+  //   backgroundColor: "gray"
+  // },
+  listItemCont: {
+    flexDirection: "row",
+    alignItems: 'flex-start',
   },
   inputBox: {
-      width: '100%',
+      width: '90%',
       margin: 10,
       padding: 15,
       fontSize: 16,
+      color: '#4faadb',
       borderColor: '#d3d3d3',
-      borderBottomWidth: 1,
+      borderRadius: 3,
+      borderWidth: 1,
       textAlign: 'center'
   },
   button: {
-      marginTop: 30,
-      marginBottom: 20,
-      paddingVertical: 5,
-      alignItems: 'center',
-      backgroundColor: '#FFA611',
-      borderColor: '#FFA611',
-      borderWidth: 1,
-      borderRadius: 5,
-      width: 200
+    marginTop: 10,
+    marginBottom: 10,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: '#4faadb',
+    borderColor: '#4faadb',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 150
+},
+buttonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff'
+},
+  dateTimeContainer: {
+    flex: 0.3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+    justifyContent: 'space-between',
   },
-  buttonText: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#fff'
-  },
+  dateTimeButton: {
+    backgroundColor: '#d3d3d3',
+    borderColor: '#d3d3d3',
+    borderWidth: 1,
+    borderRadius: 3,
+    width: 150,
+    alignItems: 'center',
+    padding: 5
+},
   buttonSignup: {
       fontSize: 12
   },
@@ -264,16 +374,14 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
   },
   headerContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    marginHorizontal: 20,
-    marginBottom: 0,
+    marginHorizontal: 5,
     marginTop: 20,
   },
   headerText: {
     fontSize: 22,
     fontWeight: '600',
     marginBottom: 5,
+    color: '#4faadb'
   },
   examplesContainer: {
     paddingTop: 15,
