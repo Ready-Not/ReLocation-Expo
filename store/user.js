@@ -104,7 +104,7 @@ export const leaveGroup = (groupId, uid) => {
       })
       toModify.usersInGroup=updated
       await firestore.collection('groups').doc(groupId).set(toModify)
-      const newGroup = firestore.collection('groups').doc(groupId).get()
+      const newGroup = await firestore.collection('groups').doc(groupId).get()
       if (newGroup) {
         if (!newGroup.data().usersInGroup.inclues(uid)) {alert('You have left the group')}
         dispatch(getGroups(uid))

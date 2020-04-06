@@ -68,7 +68,7 @@ export default class MyMaps extends Component {
 
       My address: unknown`
     }
-
+    text=text.split('}').join(' ')
     return (
       <View style={styles.container}>
         <Text style={styles.paragraph}>{text}</Text>
@@ -83,11 +83,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#fff',
+    borderColor: '#4faadb',
+    borderWidth: 3,
   },
   paragraph: {
     margin: 24,
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'center',
   },
 });
