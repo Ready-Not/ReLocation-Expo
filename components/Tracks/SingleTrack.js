@@ -24,7 +24,6 @@ class SingleTrack extends Component {
 
   componentDidMount(){
     const {track} = this.props.route.params
-    // this.setState({latitude: track.destination.latitude, longitude: track.destination.longitude})
     this.props.getTrackee(track.trackee)
     this.attemptReverseGeocodeAsync()
     track.trackers.map(tracker => this.getTrackerName(tracker))
@@ -164,9 +163,8 @@ class SingleTrack extends Component {
 
   render() {
     const {track} = this.props.route.params
-    // const {latitude, longitude} = this.state
 
-    if(!this.props.trackee || !this.state.trackers){
+    if(!this.props.trackee || !this.state.trackers || !this.state.destination){
       return (
         <View>
           <ActivityIndicator />
@@ -191,11 +189,11 @@ class SingleTrack extends Component {
         {this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)}
         {this.state.be} checking to make sure {this.props.trackee.first} gets to {this.state.destination} safely on {this.state.eta}
         </Text>
-        {/* <MapView
+        <MapView
         style={styles.map}
         initialRegion={{
-        latitude: `${latitude}`,
-        longitude: `${longitude}`,
+        latitude: track.destination.latitude,
+        longitude: track.destination.longitude,
         latitudeDelta: 0.008,
         longitudeDelta: 0.005
         }}
@@ -203,11 +201,11 @@ class SingleTrack extends Component {
         <MapView.Marker
           pinColor='#4faadb'
           coordinate={{
-            latitude: `${latitude}`,
-            longitude: `${longitude}`}}
+            latitude: track.destination.latitude,
+            longitude: track.destination.longitude}}
           title={`${this.props.trackee.first}'s destination`}
         />
-        </MapView> */}
+        </MapView>
 
        {this.needConfirmation(track)}
 
