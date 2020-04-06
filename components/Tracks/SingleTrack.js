@@ -183,7 +183,7 @@ class SingleTrack extends Component {
           rounded
           borderColor="#4faadb"
           borderWidth="5"
-          source={{uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'}}
+          source={{uri: this.props.trackee.imgURL}}
         />
         <Text style={styles.textBox}>
         {this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)}
@@ -285,6 +285,7 @@ const styles = StyleSheet.create({
     width: 200,
     margin: 20,
     borderWidth: 2,
+    borderColor: '#4faadb'
   }
 })
 

@@ -18,6 +18,7 @@ import {CurrentContacts} from './components/Contacts/CurrentContacts';
 import SingleGroup from './components/Groups/SingleGroup';
 import CreateGroup from './components/Groups/CreateGroup';
 import CurrentGroups from './components/Groups/CurrentGroups';
+import DummySchedule from './components/Tracks/DummySchedule';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -62,6 +63,7 @@ function LogIn() {
       <Stack.Screen name="Current Groups" component={CurrentGroups} />
       <Stack.Screen name="Group" component={SingleGroup} />
       <Stack.Screen name="Create Group" component={CreateGroup} />
+      <Stack.Screen name="DummySchedule" component={DummySchedule} />
     </Stack.Navigator>
   )
 }
