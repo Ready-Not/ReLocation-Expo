@@ -1,15 +1,9 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, Platform, ScrollView, TouchableOpacityBase } from 'react-native'
-import { Dropdown } from 'react-native-material-dropdown';
-import  MapView  from 'react-native-maps'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, Platform} from 'react-native'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import firebase from '../../config';
-import Map from '../Map'
 import { setTrackThunk } from '../../store/tracks'
 import { getContacts } from '../../store/user'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Touchable from 'react-native-platform-touchable';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -131,13 +125,6 @@ class TrackForm extends React.Component {
     })
   };
 
-  // onDateTimeChange = (event, selectedDate) => {
-  //   this.setState({
-  //     dateTimeShow: false,
-  //     ETA: selectedtDate
-  //   })
-  // };
-
   componentDidMount () {
     this._getLocationAsync()
     console.log(this.state.ETA)
@@ -146,7 +133,9 @@ class TrackForm extends React.Component {
   render() {
     let data = []
     if(this.props.contacts){
-     data = this.props.contacts.map(friend => (
+     data = this.props.contacts
+      .filter(friend => friend.status === 'accepted')
+      .map(friend => (
       {value: `${friend.First} ${friend.Last}`,
         uid: friend.uid
       }))
@@ -155,9 +144,6 @@ class TrackForm extends React.Component {
 
     return (
         <View style={styles.container}>
-         {/* <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Select location</Text>
-        </View> */}
 
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Trip Destination</Text>
@@ -169,17 +155,6 @@ class TrackForm extends React.Component {
         placeholder='Enter Address'
         style={styles.inputBox}
         ></TextInput>
-
-        {/* <View style={styles.actionContainer}>
-          <Button
-              onPress={this._attemptGeocodeAsync}
-              title="Set Destination"
-              disabled={typeof this.state.targetAddress !== 'string'}
-              style={styles.button}
-            />
-        </View> */}
-
-        {/* <View style={styles.separator} /> */}
 
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Who are we safeguarding today?</Text>
@@ -360,13 +335,6 @@ buttonText: {
     alignItems: 'center',
     padding: 5
 },
-  buttonSignup: {
-      fontSize: 12
-  },
-  mapStyle: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
   headerContainer: {
     marginHorizontal: 5,
     marginTop: 20,
