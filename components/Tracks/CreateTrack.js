@@ -203,8 +203,6 @@ class TrackForm extends React.Component {
       />
       </View>
 
-      {/* <View style={styles.separator} /> */}
-
       <View style={styles.headerContainer}>
           <Text style={styles.headerText}>What is ETA?</Text>
       </View>
@@ -315,10 +313,6 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     fontSize: 20,
   },
-  // hr: {
-  //   height: 1,
-  //   backgroundColor: "gray"
-  // },
   listItemCont: {
     flexDirection: "row",
     alignItems: 'flex-start',
