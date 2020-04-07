@@ -91,6 +91,7 @@ export const getTrackeeTracksThunk = () => {
           trackee: trackData.trackee,
           trackers: trackData.trackers,
           destination: trackData.finalLocation,
+          place: trackData.destination,
           ETA: trackData.ETA,
           confirm: trackData.confirm,
         }
@@ -194,6 +195,7 @@ export const setTrackThunk = (newTrack) => {
         ETA: newTrack.ETA,
         currentLocation: newTrack.currentLocation,
         finalLocation: newTrack.finalLocation,
+        destination: newTrack.destination,
         confirm,
         status: 'open'
       }

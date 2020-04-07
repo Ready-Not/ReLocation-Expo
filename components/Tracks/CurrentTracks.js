@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import firebase from '../../config';
 import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTrackers} from '../../store/tracks'
 import {ListItem} from 'react-native-elements';
+import * as Location from 'expo-location';
 
 
 class AllTracks extends React.Component {
@@ -105,6 +106,7 @@ class AllTracks extends React.Component {
           let date = track.ETA.toDate().toLocaleString().split(' ')[0]
           let timeNum = track.ETA.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
           let timeM = track.ETA.toDate().toLocaleString().split(' ')[2].toLowerCase()
+          console.log(track.place)
           return(
             <ListItem
             key={track.id}
