@@ -65,7 +65,7 @@ class FindContact extends Component {
           rounded
           borderColor="#4faadb"
           borderWidth="5"
-          source={this.props.found.imgURL ? this.props.found.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+          source={this.props.found.imgURL ? {uri: this.props.found.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
         />
         <Text style={styles.textBox}>{this.props.found.First} {this.props.found.Last}</Text>
         <Text style={styles.textBox}>{this.props.found.email}</Text>

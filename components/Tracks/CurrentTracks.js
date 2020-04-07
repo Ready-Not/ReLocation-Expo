@@ -35,26 +35,6 @@ class AllTracks extends React.Component {
                 onPress: (id) => this.props.declineTrack(track.id)
                 },],{ cancelable: false }
             )}>Decline Track</Text>
-        {/* <Button
-        title='Confirm track'
-        onPress={() => this.props.confirmTrack(track.id)}>
-        </Button> */}
-        {/* <Button
-        title='Decline track'
-        onPress={() =>
-          Alert.alert('Decline Track',
-            'Are you sure you want to decline the track',
-            [{
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-              },
-              {
-              text: 'Yes',
-              onPress: (id) => this.props.declineTrack(track.id)
-              },],{ cancelable: false }
-          )}>
-        </Button> */}
         </View>
       )
     } else if (track.confirm == 'confirmed') {
@@ -72,20 +52,6 @@ class AllTracks extends React.Component {
               onPress: (id) => this.props.cancelTrack(track.id)
               },], {cancelable: false}
           )}>Cancel Track</Text>
-        // <Button title="Cancel track"
-        //   onPress={() =>
-        //     Alert.alert('Cancel Track',
-        //       'Are you sure you want to delete the track',
-        //       [{
-        //         text: 'Cancel',
-        //         onPress: () => console.log('Cancel Pressed'),
-        //         style: 'cancel',
-        //         },
-        //         {
-        //         text: 'Yes',
-        //         onPress: (id) => this.props.cancelTrack(track.id)
-        //         },], {cancelable: false}
-        //     )}/>
       )}
   }
 
@@ -139,35 +105,6 @@ class AllTracks extends React.Component {
                 )} />
               )
             }) : <></>}
-          {/* {this.props.trackeeTracks.map((track) => {
-          return(
-            <View key={track.id} style={styles.singleTrackBox}>
-              <TouchableOpacity
-                onPress={() => (
-                  this.props.getTrackee(track.trackee),
-                  this.props.navigation.navigate('Trip', {track})
-                  )}>
-                <Text style={styles.textBox}>ETA: {track.ETA.toDate().toLocaleString()}</Text>
-                <Text style={styles.textBox}>Track status: {track.confirm}</Text>
-              </TouchableOpacity>
-              {this.needConfirmation(track)}
-           </View>
-          )}
-          )} */}
-        {/* <View style={styles.container}>
-        <Text styles={styles.title}>Trips I'm following:</Text>
-        {this.props.trackerTracks.map((track) => {
-        return(
-          <View key={track.id} style={styles.singleTrackBox}>
-           <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Trip', {track})}>
-             <Text>Track with ETA: {track.ETA.toDate().toLocaleString()}</Text>
-             <Text>Track status: {track.confirm}</Text>
-            </TouchableOpacity>
-          </View>
-         )}
-         )}
-        </View> */}
   </View>)
   }
 }

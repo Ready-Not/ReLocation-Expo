@@ -55,34 +55,6 @@ class SingleTrack extends Component {
           )}>
             <Text style={styles.buttonText}>Decline Track</Text>
           </TouchableOpacity>
-        {/* <Button
-        title='Confirm track'
-        onPress={() => (
-          this.props.navigation.navigate('Trip', {track}),
-          this.props.confirmTrack(track.id))}
-        >
-        </Button> */}
-        {/* <Button
-        title='Decline track'
-        onPress={() =>
-          Alert.alert(
-            'Decline Track',
-            'Are you sure you want to decline the track',
-            [
-              {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-              },
-              {
-              text: 'Yes',
-              onPress: (id) => this.props.declineTrack(track.id)
-              },
-            ],
-            { cancelable: false }
-          )}
-        >
-        </Button> */}
         </View>
       )
     } else if (track.confirm == 'confirmed') {
@@ -104,25 +76,6 @@ class SingleTrack extends Component {
           )}>
           <Text style={styles.buttonText}>Cancel Track</Text>
         </TouchableOpacity>
-        // <Button title="Cancel track"
-        //         onPress={() =>
-        //           Alert.alert(
-        //             'Cancel Track',
-        //             'Are you sure you want to delete the track',
-        //             [
-        //               {
-        //               text: 'Cancel',
-        //               onPress: () => console.log('Cancel Pressed'),
-        //               style: 'cancel',
-        //               },
-        //               {
-        //               text: 'Yes',
-        //               onPress: (id) => this.props.cancelTrack(track.id)
-        //               },
-        //             ],
-        //             { cancelable: false }
-        //           )}
-        //       />
       )
     }
   }
@@ -183,7 +136,7 @@ class SingleTrack extends Component {
           rounded
           borderColor="#4faadb"
           borderWidth="5"
-          source={{uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'}}
+          source={{uri: this.props.trackee.imgURL}}
         />
         <Text style={styles.textBox}>
         {this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)}
@@ -285,6 +238,7 @@ const styles = StyleSheet.create({
     width: 200,
     margin: 20,
     borderWidth: 2,
+    borderColor: '#4faadb'
   }
 })
 

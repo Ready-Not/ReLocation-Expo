@@ -21,7 +21,7 @@ class SingleGroup extends Component {
         <Text style={styles.textBox}>Members:</Text>
         {group.usersInGroup.map(user => {
           return <ListItem key={user.uid}
-          leftAvatar={{ source: user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}} }
+          leftAvatar={{ source: user.imgURL ? {uri: user.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}} }
           title={`${user.First} ${user.Last}`}
           subtitle={user.email}
           bottomDivider

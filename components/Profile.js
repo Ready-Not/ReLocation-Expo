@@ -32,7 +32,7 @@ class Profile extends React.Component {
 
     render() {
         const {user, contacts, groups} = this.props
-        if (!this.state.latitude) {return(<ActivityIndicator />)}
+        if (!this.state.latitude) {return(<ActivityIndicator style={styles.container} />)}
         return (
             <ScrollView>
             <View style={styles.container}>
@@ -46,7 +46,7 @@ class Profile extends React.Component {
                     margin
                     borderColor="#4faadb"
                     borderWidth="5"
-                    source={user.imgURL ? user.imgURL : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                    source={user.imgURL ? {uri: user.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                     />
 
                     <View style={styles.container}>
@@ -111,6 +111,7 @@ class Profile extends React.Component {
                 <TouchableOpacity style={styles.logout} onPress={this.handleSignout}>
                 <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
+                {user.email ? <Button title='Schedule Trip' onPress={() => this.props.navigation.navigate('DummySchedule')}/> : <></>}
             </View>
             </ScrollView>
         )

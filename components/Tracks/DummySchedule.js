@@ -1,16 +1,22 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, Platform} from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Alert, Dimensions, ActivityIndicator, FlatList, TouchableHighlight, Platform, ScrollView, TouchableOpacityBase, Switch } from 'react-native'
+import { Dropdown } from 'react-native-material-dropdown';
+import  MapView  from 'react-native-maps'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import firebase from '../../config';
+import Map from '../Map'
 import { setTrackThunk } from '../../store/tracks'
 import { getContacts } from '../../store/user'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Touchable from 'react-native-platform-touchable';
 
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
 
 
-class TrackForm extends React.Component {
+class DummySchedule extends React.Component {
 
   constructor (props) {
     super (props);
@@ -24,7 +30,8 @@ class TrackForm extends React.Component {
       trackee: '',
       trackers: [],
       dateTimeMode: '',
-      dateTimeShow: false
+      dateTimeShow: false,
+      oneTime: false
     }
     this.handleAddress = this.handleAddress.bind(this)
   }
@@ -125,17 +132,22 @@ class TrackForm extends React.Component {
     })
   };
 
+  // onDateTimeChange = (event, selectedDate) => {
+  //   this.setState({
+  //     dateTimeShow: false,
+  //     ETA: selectedtDate
+  //   })
+  // };
+
   componentDidMount () {
     this._getLocationAsync()
-    // console.log(this.state.ETA)
+    console.log(this.state.ETA)
   }
 
   render() {
     let data = []
     if(this.props.contacts){
-     data = this.props.contacts
-      .filter(friend => friend.status === 'accepted')
-      .map(friend => (
+     data = this.props.contacts.map(friend => (
       {value: `${friend.First} ${friend.Last}`,
         uid: friend.uid
       }))
@@ -179,54 +191,52 @@ class TrackForm extends React.Component {
       </View>
 
       <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>What is the ETA?</Text>
+          <Text style={styles.headerText}>What Kind of Alert?</Text>
       </View>
 
-        <Text style={[styles.inputBoxText, {fontSize: 20, marginBottom: 5, color: '#4faadb'}]}>{this.state.ETA.toLocaleDateString()} {this.state.ETA.toLocaleTimeString()}</Text>
-
-      {!this.state.dateTimeShow && (<View style={styles.dateTimeContainer}>
+      {!this.state.dateTimeShow && !this.state.location && (<View style={styles.dateTimeContainer}>
         <TouchableOpacity style={styles.dateTimeButton}>
         <Text
-          onPress={() => this.showDatepicker()}>Change Date</Text>
+          onPress={() => this.props.navigation.navigate('Trip')}>Time-based</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dateTimeButton}>
         <Text
-          onPress={() => this.showTimepicker()}>Change Time</Text>
+          onPress={() => this.setState({location: true})}>Location-based</Text>
         </TouchableOpacity>
         </View>
       )}
+      <Text> </Text>
+      { this.state.location ? <View><Text style={styles.textBox}>We'll alert you whenever they arrive at {this.state.finalLocation ? this.state.finalLocation : 'the final destination'}</Text></View> : <></>}
 
-        {this.state.dateTimeShow && (
-        <View style={{width: "90%", alignItems: 'center'}}>
-        <DateTimePicker
-          style={{width: "90%"}}
-          value={this.state.ETA}
-          mode={this.state.dateTimeMode}
-          is24Hour={true}
-          display="default"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || this.state.ETA
-            if (Platform.OS !== 'ios') {
-              this.setState ({
-                dateTimeShow: false
-              })
-            }
-            this.setState({ETA: currentDate})
-          }}
-        />
-        <TouchableOpacity style={styles.dateTimeButton}>
-        <Text style={styles.buttonText}
-          onPress={() =>
-          {this.setState({dateTimeShow: false})
-          }}>{`Set ${this.state.dateTimeMode}`}</Text>
+
+      <View style={styles.dateTimeContainer}>
+        <Text style={styles.headerText}>Is This a Recurring Track?</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "#2f6380" }}
+          thumbColor={{false: "#2f6380", true: "#dcd8dc"}}
+          onValueChange={value => this.setState({oneTime: value})}
+          value={this.state.oneTime}
+          />
+      </View>
+      {!this.state.recur && (this.state.oneTime===true) ? <View style={styles.recurContainer}>
+      <TouchableOpacity style={styles.dateTimeButton}>
+        <Text
+          onPress={() => this.setState({recur: 'Daily'})}>Daily</Text>
         </TouchableOpacity>
-        </View>
-        )}
+        <TouchableOpacity style={styles.dateTimeButton}>
+        <Text
+          onPress={() => this.setState({recur: 'Weekly'})}>Weekly</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dateTimeButton}>
+        <Text
+          onPress={() => this.setState({recur: 'Monthly'})}>Monthly</Text>
+        </TouchableOpacity>
+      </View>: <></>}
+      {this.state.recur && this.state.oneTime===true ? <Text>Schedule will repeate {this.state.recur}</Text> : <></>}
 
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Who's Checking In?</Text>
         </View>
-
 
         <FlatList
         data={data}
@@ -246,11 +256,9 @@ class TrackForm extends React.Component {
         <View style={styles.dateTimeContainer}>
         <TouchableOpacity style={styles.button}>
         <Text
-          onPress={async () => {
-          const finDest = await this._attemptGeocodeAsync()
-          // console.log(finDest)
-          this.props.setTrack(this.state)
-          this.props.navigation.navigate('All Trips')}
+          onPress={() => {
+          Alert.alert('Success! Your Trip is ready')
+          this.props.navigation.navigate('Profile')}
         }
           style={styles.buttonText}>
             Submit</Text>
@@ -286,16 +294,20 @@ const styles = StyleSheet.create({
   listItem: {
     paddingTop: 2,
     paddingBottom: 2,
-    fontSize: 20,
+    fontSize: 18,
   },
+  // hr: {
+  //   height: 1,
+  //   backgroundColor: "gray"
+  // },
   listItemCont: {
     flexDirection: "row",
     alignItems: 'flex-start',
   },
   inputBox: {
       width: '90%',
-      margin: 10,
-      padding: 15,
+      margin: 5,
+      padding: 10,
       fontSize: 16,
       color: '#4faadb',
       borderColor: '#d3d3d3',
@@ -304,8 +316,8 @@ const styles = StyleSheet.create({
       textAlign: 'center'
   },
   button: {
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     paddingVertical: 5,
     alignItems: 'center',
     backgroundColor: '#4faadb',
@@ -315,16 +327,24 @@ const styles = StyleSheet.create({
     width: 150
 },
 buttonText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff'
 },
   dateTimeContainer: {
-    flex: 0.3,
+    flex: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     width: '90%',
     justifyContent: 'space-between',
+  },
+  recurContainer: {
+    flex: 0.3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+    marginVertical: 1,
+    justifyContent: 'space-around',
   },
   dateTimeButton: {
     backgroundColor: '#d3d3d3',
@@ -335,12 +355,19 @@ buttonText: {
     alignItems: 'center',
     padding: 5
 },
+  buttonSignup: {
+      fontSize: 12
+  },
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
   headerContainer: {
     marginHorizontal: 5,
-    marginTop: 20,
+    marginTop: 5,
   },
   headerText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: 5,
     color: '#4faadb'
@@ -380,9 +407,10 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   user: state.user,
   contacts: state.user.contacts,
+  groups: state.user.groups
 })
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrackForm)
+export default connect(mapStateToProps, mapDispatchToProps)(DummySchedule)
 
 
