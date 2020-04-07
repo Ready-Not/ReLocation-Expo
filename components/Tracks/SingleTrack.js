@@ -176,7 +176,7 @@ class SingleTrack extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5FCFF',
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
@@ -209,7 +209,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#fff',
     alignItems: 'flex-start',
     justifyContent: 'space-around',
 },
@@ -217,8 +216,9 @@ const styles = StyleSheet.create({
     width: '90%',
     margin: 5,
     padding: 5,
-    fontSize: 20,
+    fontSize: 15,
     textAlign: 'center',
+    backgroundColor: '#F5FCFF'
   },
   title: {
     marginTop: 10,
@@ -227,11 +227,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#4faadb',
     borderColor: '#4faadb',
-    borderWidth: 1,
+    borderWidth: 10,
     borderRadius: 5,
     width: 300,
-    fontSize: 25,
-    fontWeight: 'bold',
+    fontSize: 20,
     color: '#fff',
     textAlign: "center",
   },

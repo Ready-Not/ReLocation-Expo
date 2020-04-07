@@ -248,7 +248,6 @@ class TrackForm extends React.Component {
         <Text
           onPress={async () => {
           const finDest = await this._attemptGeocodeAsync()
-          // console.log(finDest)
           this.props.setTrack(this.state)
           this.props.navigation.navigate('All Trips')}
         }

@@ -66,7 +66,7 @@ class AllTracks extends React.Component {
     let date = eta.toDate().toLocaleString().split(' ')[0]
     let timeNum = eta.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
     let timeM = eta.toDate().toLocaleString().split(' ')[2].toLowerCase()
-    return `On ${date} at ${timeNum} ${timeM}`
+    return `${date}`
   }
 
   componentDidMount() {
@@ -87,7 +87,8 @@ class AllTracks extends React.Component {
           return(
             <ListItem
             key={track.id}
-            title={`${eta}, you are planning to be at ${track.place}`}
+            title={`${track.place} on ${eta}`}
+            titleStyle={styles.trackBox}
             subtitle={
               <View style={styles.subtitleView}>
                 {track.confirm === 'confirmed' ? <Text style={styles.confirmedText}>{track.confirm}</Text> : <></>}
@@ -111,7 +112,8 @@ class AllTracks extends React.Component {
           return(
               <ListItem
               key={track.id}
-              title={`${eta}, your friend, plans to be at ${track.place}`}
+              title={`${track.place} on ${eta}`}
+              titleStyle={styles.trackBox}
               subtitle={
                 <View style={styles.subtitleView}>
                   {track.confirm === 'confirmed' ? <Text style={styles.confirmedText}>{track.confirm}</Text> : <></>}
@@ -210,6 +212,9 @@ declinedText:{
   fontSize: 12,
   color: 'grey',
   margin: 5,
+},
+trackBox:{
+  fontSize: 13,
 }
 })
 
