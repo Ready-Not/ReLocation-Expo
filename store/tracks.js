@@ -1,4 +1,5 @@
 import firebase, {firestore} from '../config'
+import { concat } from 'react-native-reanimated'
 
 const GET_TRACKEE_TRACKS = 'GET_TRACKEE_TRACKS'
 const GET_TRACKER_TRACKS = 'GET_TRACKER_TRACKS'
@@ -51,7 +52,7 @@ export const getTrackee = uid => {
               .collection('users')
               .doc(uid)
               .get()
-          const names = {first: user.data().First, last: user.data().Last}
+          const names = {first: user.data().First, last: user.data().Last, imgURL: user.data().imgURL}
           dispatch(gotTrackee(names))
       } catch (e) {
           alert(e)
@@ -91,6 +92,7 @@ export const getTrackeeTracksThunk = () => {
           trackee: trackData.trackee,
           trackers: trackData.trackers,
           destination: trackData.finalLocation,
+          place: trackData.destination,
           ETA: trackData.ETA,
           confirm: trackData.confirm,
         }
@@ -98,7 +100,7 @@ export const getTrackeeTracksThunk = () => {
       })
       dispatch({type: GET_TRACKEE_TRACKS, payload: allMyTracks})
     } catch (error){
-      // console.log('Failed to get users tracks', error)
+       console.log('Failed to get users tracks', error)
     }
   }
 }
@@ -110,14 +112,17 @@ export const getTrackerTracksThunk = () => {
       let allMyTracks = []
       const allTracks = await firestore
               .collection('tracks')
-              .where('tracker', 'array-contains', currentUser.uid)
+              .where('trackers', 'array-contains', currentUser.uid)
               .where('status', '==', 'open')
               .get()
-      allTracks.forEach(track => {
+      allTracks.forEach((track) => {
         let trackData = track.data()
         let currentTrack = {
           id: track.id,
           trackee: trackData.trackee,
+          trackers: trackData.trackers,
+          destination: trackData.finalLocation,
+          place: trackData.destination,
           ETA: trackData.ETA,
           confirm: trackData.confirm,
         }
@@ -130,14 +135,14 @@ export const getTrackerTracksThunk = () => {
   }
 }
 
-export const cancelTrackThunk = (id) => {
+export const cancelTrackThunk = (id, status) => {
   return async (dispatch) => {
     try {
       await firestore
               .collection('tracks')
               .doc(id)
               .delete()
-      dispatch({type: CANCEL_TRACK, payload: id})
+      dispatch({type: CANCEL_TRACK, payload: id, status})
     }
     catch (error) {
       console.log('Failed to cancel track instance', error)
@@ -145,8 +150,7 @@ export const cancelTrackThunk = (id) => {
   }
 }
 
-export const confirmTrackThunk = (id) => {
-  console.log('track id from confirm thunk', id)
+export const confirmTrackThunk = (id, status) => {
   return async (dispatch) => {
     try {
       await firestore
@@ -155,7 +159,7 @@ export const confirmTrackThunk = (id) => {
               .update({
                 confirm: 'confirmed'
               })
-      dispatch({type: CONFIRM_TRACK, payload: id})
+      dispatch({type: CONFIRM_TRACK, payload: id, status})
     }
     catch (error) {
       console.log('Failed to confirm track instance', error)
@@ -163,8 +167,7 @@ export const confirmTrackThunk = (id) => {
   }
 }
 
-export const declineTrackThunk = (id) => {
-  console.log('id from thunk', id)
+export const declineTrackThunk = (id, status) => {
   return async (dispatch) => {
     try {
       await firestore
@@ -173,7 +176,7 @@ export const declineTrackThunk = (id) => {
               .update({
                 confirm: 'declined'
               })
-      dispatch({type: DECLINE_TRACK, payload: id})
+      dispatch({type: DECLINE_TRACK, payload: id, status})
     }
     catch (error) {
       console.log('Failed to declined track instance', error)
@@ -194,12 +197,12 @@ export const setTrackThunk = (newTrack) => {
         ETA: newTrack.ETA,
         currentLocation: newTrack.currentLocation,
         finalLocation: newTrack.finalLocation,
+        destination: newTrack.targetAddress,
         confirm,
         status: 'open'
       }
-      firestore.collection('tracks')
+      await firestore.collection('tracks')
                 .add(track)
-      dispatch({ type: SET_TRACK, payload: track })
     } catch (e) {
       console.log(e)
     }
@@ -221,17 +224,19 @@ const tracksReducer = (state = initialState, action) => {
       case GET_TRACKER_TRACKS:
         return {...state, trackerTracks: action.payload}
     case CANCEL_TRACK:
-      return (
-        {
-          ...state,
-          trackeeTracks: state.trackeeTracks.filter(
-            track => track.id !== action.payload
-          )
-        }
-      )
+      if(action.status === 'trackee'){
+        return (
+          {...state,
+            trackeeTracks: state.trackeeTracks.filter(
+              track => track.id !== action.payload)})
+      }else{
+        return (
+          {...state,
+            trackerTracks: state.trackerTracks.filter(
+              track => track.id !== action.payload)})
+      }
     case CONFIRM_TRACK:
-      console.log('payload from confirm track', action.payload)
-      let newTrackeeTracks = state.trackeeTracks.map(track => {
+      let newTrackerTracks = state.trackerTracks.map(track => {
         if (track.id == action.payload) {
           track.confirm = 'confirmed'
         }
@@ -240,12 +245,11 @@ const tracksReducer = (state = initialState, action) => {
       return (
         {
           ...state,
-          trackeeTracks: newTrackeeTracks
+          trackerTracks: newTrackerTracks
         }
       )
     case DECLINE_TRACK:
-      console.log('pyload from decline track', action.payload)
-      newTrackeeTracks = state.trackeeTracks.map(track => {
+      newTrackerTracks = state.trackerTracks.map(track => {
         if (track.id == action.payload) {
           track.confirm = 'declined'
         }
@@ -254,13 +258,12 @@ const tracksReducer = (state = initialState, action) => {
       return (
         {
           ...state,
-          trackeeTracks: newTrackeeTracks
+          trackerTracks: newTrackerTracks
         }
       )
     case SET_TRACK:
-      // console.log('action payload received to set track reducer', action.payload)
       return (
-          {...state, trackeeTracks: [...state.trackeeTracks, action.payload]}
+          {...state, trackeeTracks: [...state.trackeeTracks, action.track]}
         )
     default:
       return state

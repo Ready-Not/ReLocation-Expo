@@ -46,14 +46,12 @@ class Profile extends React.Component {
                     margin
                     borderColor="#4faadb"
                     borderWidth="5"
-                    source={user.imgURL ? {uri: user.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                    source={user.imgURL ? {uri: user.imgURL} : { uri: 'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg',}}
                     />
+                </View>
 
-                    <View style={styles.container}>
-                    <Text style={styles.textBox}>First name: {user.First}</Text>
-                    <Text style={styles.textBox}>Last name: {user.Last}</Text>
-                    <Text style={styles.textBox}>Email: {user.email}</Text>
-                    </View>
+                <View style={styles.container}>
+                    <Text style={styles.textBox}>{user.email}</Text>
                 </View>
 
                 <View styles={styles.container}>
