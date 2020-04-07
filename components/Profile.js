@@ -32,6 +32,7 @@ class Profile extends React.Component {
 
     render() {
         const {user, contacts, groups} = this.props
+        console.log('user from profile', user)
         if (!this.state.latitude) {return(<ActivityIndicator style={styles.container} />)}
         return (
             <ScrollView>

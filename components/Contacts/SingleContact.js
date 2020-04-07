@@ -48,7 +48,7 @@ class SingleContact extends Component {
                   rounded
                   borderColor="#4faadb"
                   borderWidth="5"
-                  source={user.imgURL ? {uri: solo.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                  source={solo.imgURL ? {uri: solo.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
         <View style={styles.buttonContainer}>
           <Text style={styles.textBoxTwo}>Allow {solo.First} to track you continuously?</Text>
@@ -73,7 +73,7 @@ class SingleContact extends Component {
                   rounded
                   borderColor="#4faadb"
                   borderWidth="5"
-                  source={user.imgURL ? {uri: user.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                  source={solo.imgURL ? {uri: solo.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
         <Text style={styles.textBox}>{solo.email}</Text>
         <TouchableOpacity style={styles.button}>
@@ -91,7 +91,7 @@ class SingleContact extends Component {
                   rounded
                   borderColor="#4faadb"
                   borderWidth="5"
-                  source={user.imgURL ? {uri: user.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
+                  source={solo.imgURL ? {uri: solo.imgURL} : { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',}}
                 />
           <Text style={styles.textBox} >{solo.email}</Text>
           <TouchableOpacity>

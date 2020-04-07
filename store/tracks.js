@@ -110,7 +110,7 @@ export const getTrackerTracksThunk = () => {
       let allMyTracks = []
       const allTracks = await firestore
               .collection('tracks')
-              .where('tracker', 'array-contains', currentUser.uid)
+              .where('trackers', 'array-contains', currentUser.uid)
               .where('status', '==', 'open')
               .get()
       allTracks.forEach(track => {
