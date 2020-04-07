@@ -30,14 +30,15 @@ class SingleTrack extends Component {
     this.getETA(track)
   }
 
-  needConfirmation(track) {
+  needConfirmation(track, status) {
     if (track.confirm == 'pending') {
       return (
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => (
-          this.props.navigation.navigate('Trip', {track}),
-          this.props.confirmTrack(track.id))}>
-            <Text style={styles.buttonText}>Confirm Track</Text>
+          this.props.confirmTrack(track.id, status),
+          this.props.navigation.navigate('All Trips')
+          )}>
+            <Text style={styles.buttonText}>Confirm</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() =>
           Alert.alert('Decline Track',
@@ -49,15 +50,15 @@ class SingleTrack extends Component {
               },
               {
               text: 'Yes',
-              onPress: (id) => this.props.declineTrack(track.id)
+              onPress: (id) => this.props.declineTrack(track.id, status)
               },],
             { cancelable: false }
           )}>
-            <Text style={styles.buttonText}>Decline Track</Text>
+            <Text style={styles.buttonText}>Decline</Text>
           </TouchableOpacity>
         </View>
       )
-    } else if (track.confirm == 'confirmed') {
+    } else if (track.confirm == 'confirmed' && status === 'trackee') {
       return (
         <TouchableOpacity style={styles.button} onPress={() =>
           Alert.alert(
@@ -70,11 +71,11 @@ class SingleTrack extends Component {
               },
               {
               text: 'Yes',
-              onPress: (id) => this.props.cancelTrack(track.id)
+              onPress: (id) => this.props.cancelTrack(track.id, status)
               },],
             { cancelable: false }
           )}>
-          <Text style={styles.buttonText}>Cancel Track</Text>
+          <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
       )
     }
@@ -116,6 +117,7 @@ class SingleTrack extends Component {
 
   render() {
     const {track} = this.props.route.params
+    let status = 'tracker'
 
     if(!this.props.trackee || !this.state.trackers || !this.state.destination){
       return (
@@ -125,6 +127,7 @@ class SingleTrack extends Component {
       )
     }
     else {
+      if(track.trackee === this.props.user.uid) {status = 'trackee'}
     return (
       <View style={styles.container}>
         <Text
@@ -136,7 +139,7 @@ class SingleTrack extends Component {
           rounded
           borderColor="#4faadb"
           borderWidth="5"
-          source={{uri: this.props.trackee.imgURL}}
+          source={this.props.trackee.imgURL ? {uri: this.props.trackee.imgURL} : { uri: 'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg',}}
         />
         <Text style={styles.textBox}>
         {this.state.trackers.map(tracker => <Text key={tracker}> {tracker}, </Text>)}
@@ -160,7 +163,7 @@ class SingleTrack extends Component {
         />
         </MapView>
 
-       {this.needConfirmation(track)}
+       {this.needConfirmation(track, status)}
 
       </View>
 
@@ -201,7 +204,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 20,
-    fontWeight: 'bold',
     color: '#fff'
   },
   buttonContainer: {
@@ -244,9 +246,9 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => ({
   getTracks: () => dispatch(getTracksThunk()),
-  cancelTrack: () => dispatch(cancelTrackThunk()),
-  confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
-  declineTrack: (id) => dispatch(declineTrackThunk(id)),
+  cancelTrack: (id, status) => dispatch(cancelTrackThunk(id, status)),
+  confirmTrack: (id, status) => dispatch(confirmTrackThunk(id, status)),
+  declineTrack: (id, status) => dispatch(declineTrackThunk(id, status)),
   getTrackee: (uid) => dispatch(getTrackee(uid)),
   getTracker: (uids) => dispatch(getTracker(uids))
 })

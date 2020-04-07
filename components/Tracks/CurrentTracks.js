@@ -6,6 +6,7 @@ import firebase from '../../config';
 import {getTrackeeTracksThunk, getTrackerTracksThunk, cancelTrackThunk, confirmTrackThunk, declineTrackThunk, getTrackee, getTrackers} from '../../store/tracks'
 import {ListItem} from 'react-native-elements';
 import * as Location from 'expo-location';
+import { greaterThan } from 'react-native-reanimated';
 
 
 class AllTracks extends React.Component {
@@ -15,12 +16,15 @@ class AllTracks extends React.Component {
   }
 
 
-  needConfirmation(track) {
+  needConfirmation(track, status) {
     if (track.confirm == 'pending') {
       return (
-        <View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
           <Text style={styles.rightElement}
-          onPress={() => this.props.confirmTrack(track.id)}>Confirm Track</Text>
+          onPress={() => this.props.confirmTrack(track.id, status)}>Confirm</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button}>
           <Text style={styles.rightElement}
           onPress={() =>
             Alert.alert('Decline Track',
@@ -32,13 +36,15 @@ class AllTracks extends React.Component {
                 },
                 {
                 text: 'Yes',
-                onPress: (id) => this.props.declineTrack(track.id)
+                onPress: (id) => this.props.declineTrack(track.id, status)
                 },],{ cancelable: false }
-            )}>Decline Track</Text>
+            )}>Decline</Text>
+            </TouchableOpacity>
         </View>
       )
-    } else if (track.confirm == 'confirmed') {
+    } else if (track.confirm == 'confirmed' && status === 'trackee') {
       return (
+        <TouchableOpacity style={styles.button}>
         <Text style={styles.rightElement} onPress={() =>
           Alert.alert('Cancel Track',
             'Are you sure you want to delete the track',
@@ -49,10 +55,18 @@ class AllTracks extends React.Component {
               },
               {
               text: 'Yes',
-              onPress: (id) => this.props.cancelTrack(track.id)
+              onPress: (id) => this.props.cancelTrack(track.id, status)
               },], {cancelable: false}
-          )}>Cancel Track</Text>
+          )}>Cancel</Text>
+          </TouchableOpacity>
       )}
+  }
+
+  getETA(eta){
+    let date = eta.toDate().toLocaleString().split(' ')[0]
+    let timeNum = eta.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
+    let timeM = eta.toDate().toLocaleString().split(' ')[2].toLowerCase()
+    return `On ${date} at ${timeNum} ${timeM}`
   }
 
   componentDidMount() {
@@ -67,18 +81,21 @@ class AllTracks extends React.Component {
     }
     return (
       <View>
-        {trackeeTracks.length ? <Text style={styles.title}>My Current Trips:</Text> : <></>}
-        {trackeeTracks ? trackeeTracks.map(track => {
-          let date = track.ETA.toDate().toLocaleString().split(' ')[0]
-          let timeNum = track.ETA.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
-          let timeM = track.ETA.toDate().toLocaleString().split(' ')[2].toLowerCase()
-          console.log(track.place)
+        <Text style={styles.title}>My Current Trips:</Text>
+        {(trackeeTracks.length >= 1) ? trackeeTracks.map(track => {
+          let eta = this.getETA(track.ETA)
           return(
             <ListItem
             key={track.id}
-            title={`ETA: ${date} ${timeNum} ${timeM}`}
-            subtitle={`Status: ${track.confirm}`}
-            rightElement={this.needConfirmation(track)}
+            title={`${eta}, you are planning to be at ${track.place}`}
+            subtitle={
+              <View style={styles.subtitleView}>
+                {track.confirm === 'confirmed' ? <Text style={styles.confirmedText}>{track.confirm}</Text> : <></>}
+                {track.confirm === 'pending' ? <Text style={styles.pendingText}>{track.confirm}</Text> : <></>}
+                {track.confirm === 'declined' ? <Text style={styles.declinedText}>{track.confirm}</Text> : <></>}
+              </View>
+            }
+            rightElement={this.needConfirmation(track, 'trackee')}
             bottomDivider
             onPress={() => (
               this.props.getTrackee(track.trackee),
@@ -86,25 +103,30 @@ class AllTracks extends React.Component {
               )}
             />
           )
-            }) : <></>}
-          {trackerTracks.length ? <Text style={styles.title}>Trips I'm Monitoring:</Text> : <></>}
-          {trackerTracks ? trackerTracks.map(track => {
-            let date = track.ETA.toDate().toLocaleString().split(' ')[0]
-            let timeNum = track.ETA.toDate().toLocaleString().split(' ')[1].split(':').slice(0,2).join(':')
-          let timeM = track.ETA.toDate().toLocaleString().split(' ')[2].toLowerCase()
+            }) : <Text style={styles.notice}>You don't have any trips planned right now</Text>}
+
+          <Text style={styles.title}>My Friends' Trips:</Text>
+          {(trackerTracks.length >= 1) ? trackerTracks.map(track => {
+            let eta = this.getETA(track.ETA)
           return(
               <ListItem
               key={track.id}
-              title={`ETA: ${date} ${timeNum} ${timeM}`}
-              subtitle={`Status: ${track.confirm}`}
-              rightElement={this.needConfirmation(track)}
+              title={`${eta}, your friend, plans to be at ${track.place}`}
+              subtitle={
+                <View style={styles.subtitleView}>
+                  {track.confirm === 'confirmed' ? <Text style={styles.confirmedText}>{track.confirm}</Text> : <></>}
+                  {track.confirm === 'pending' ? <Text style={styles.pendingText}>{track.confirm}</Text> : <></>}
+                  {track.confirm === 'declined' ? <Text style={styles.declinedText}>{track.confirm}</Text> : <></>}
+                </View>
+              }
+              rightElement={this.needConfirmation(track, 'tracker')}
               bottomDivider
               onPress={() => (
                 this.props.getTrackee(track.trackee),
                 this.props.navigation.navigate('Trip', {track})
                 )} />
               )
-            }) : <></>}
+            }) : <Text style={styles.notice}>You aren't checking on any of your friends' trips right now</Text>}
   </View>)
   }
 }
@@ -129,8 +151,7 @@ const styles = StyleSheet.create({
     padding: 3,
 },
 buttonContainer: {
-  flex: 1,
-  flexDirection: 'row',
+  flexDirection: 'column',
   backgroundColor: '#fff',
   alignItems: 'center',
   justifyContent: 'space-around',
@@ -149,18 +170,18 @@ textBox: {
     width: '75%',
     fontSize: 16,
     marginLeft: 5,
-    textAlign: 'left',
+    textAlign: 'center',
 },
 button: {
-    marginTop: 10,
-    marginBottom: 10,
-    paddingVertical: 5,
+    marginTop: 8,
+    marginBottom: 8,
+    paddingVertical: 3,
     alignItems: 'center',
     backgroundColor: '#4faadb',
     borderColor: '#4faadb',
     borderWidth: 1,
     borderRadius: 5,
-    width: 160
+    width: 100
 },
 buttonText: {
     fontSize: 20,
@@ -168,19 +189,36 @@ buttonText: {
     color: '#fff'
 },
 rightElement: {
-  fontSize: 18,
-  color: '#4faadb',
-  fontStyle: 'italic',
+  color: 'white',
   marginVertical: 5,
 },
+notice: {
+  textAlign:'center',
+  fontSize: 10,
+},
+confirmedText:{
+  fontSize: 12,
+  color: 'green',
+  margin: 5,
+},
+pendingText:{
+  fontSize: 12,
+  color: 'orange',
+  margin: 5,
+},
+declinedText:{
+  fontSize: 12,
+  color: 'grey',
+  margin: 5,
+}
 })
 
 const mapDispatchToProps = dispatch => ({
   getTrackeeTracks: () => dispatch(getTrackeeTracksThunk()),
   getTrackerTracks: () => dispatch(getTrackerTracksThunk()),
-  cancelTrack: (id) => dispatch(cancelTrackThunk(id)),
-  confirmTrack: (id) => dispatch(confirmTrackThunk(id)),
-  declineTrack: (id) => dispatch(declineTrackThunk(id)),
+  cancelTrack: (id, status) => dispatch(cancelTrackThunk(id, status)),
+  confirmTrack: (id, status) => dispatch(confirmTrackThunk(id, status)),
+  declineTrack: (id, status) => dispatch(declineTrackThunk(id, status)),
   getTrackee: (id) => dispatch(getTrackee(id)),
   getTrackers:(id) => dispatch(getTrackers(id))
 })
