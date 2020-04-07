@@ -127,7 +127,7 @@ class TrackForm extends React.Component {
 
   componentDidMount () {
     this._getLocationAsync()
-    console.log(this.state.ETA)
+    // console.log(this.state.ETA)
   }
 
   render() {
@@ -179,7 +179,7 @@ class TrackForm extends React.Component {
       </View>
 
       <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>What is ETA?</Text>
+          <Text style={styles.headerText}>What is the ETA?</Text>
       </View>
 
         <Text style={[styles.inputBoxText, {fontSize: 20, marginBottom: 5, color: '#4faadb'}]}>{this.state.ETA.toLocaleDateString()} {this.state.ETA.toLocaleTimeString()}</Text>
@@ -248,7 +248,6 @@ class TrackForm extends React.Component {
         <Text
           onPress={async () => {
           const finDest = await this._attemptGeocodeAsync()
-          console.log(finDest)
           this.props.setTrack(this.state)
           this.props.navigation.navigate('All Trips')}
         }
